@@ -4,6 +4,10 @@
 
 **Version 1.0.0** · Licensed under CC BY-NC 4.0 (see [LICENSE](LICENSE))
 
+> ## ⚠ DISCLAIMER
+> **AXIOM-02 does NOT claim to create artificial consciousness, sentience, or a mind.**
+> It is a deterministic *simulation instrument* for studying the structure of conflicted decision-making — an epistemological research tool, **not** an ontological claim of machine awareness.
+
 ---
 
 ## Abstract
@@ -146,6 +150,8 @@ For the full disclaimer text, see [`src/README.md`](src/README.md).
 - The complexity metric is a composite of eight heuristics; alternative weightings may yield different verdicts.
 - Scenarios are literary and philosophical artefacts, not experimental data from human subjects.
 - Cross-cultural validity of the drive categories has not been established.
+- **Parameterisation.** The drive interaction weights are currently parameterised based on qualitative scenario matrices rather than being dynamically learned or optimized from human empirical data.
+- **Scaling limit.** The simulation loop is bounded at 20 steps; long-term asymptotic behavior and potential chaotic attractors under infinite iterations remain unmapped.
 
 ---
 

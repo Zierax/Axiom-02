@@ -153,6 +153,11 @@ four diagnostic charts under `benchmarks/charts/`.
   ground truth.
 - Determinism is computational, not metaphysical: identical inputs yield identical traces,
   but this says nothing about whether the process is "conscious."
+- **Parameterisation.** The drive interaction weights are currently parameterised based on
+  qualitative scenario matrices rather than being dynamically learned or optimized from
+  human empirical data.
+- **Scaling limit.** The simulation loop is bounded at 20 steps; long-term asymptotic
+  behavior and potential chaotic attractors under infinite iterations remain unmapped.
 
 ---
 
