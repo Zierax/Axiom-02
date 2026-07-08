@@ -1,0 +1,110 @@
+  [loading scenario registry…]
+  [loaded 52 scenarios: 13 cascades, 1 stage trees, 7 emergent, 7 trauma tests]
+  [building AXIOM-02 v1 engine — 20 improvements active…]
+  [done]
+
+╔══════════════════════════════════════════════════════════════════════╗
+║        AXIOM-02  CONSCIOUSNESS PROBE  v1.0  ─  FULL REPORT         ║
+╚══════════════════════════════════════════════════════════════════════╝
+  Scenarios tested : 52
+  CONSCIOUS        : 8
+  INDETERMINATE    : 32
+  PROGRAMMATIC     : 12
+
+  RANKED BY COMPOSITE SCORE
+  ────────────────────────────────────────────────────────────────────
+  ◆ [0.569] ███████████████████                 DOE05      choose_worse_concert_d  LOCK=0.40  ⚡SPITE
+  ◆ [0.560] ███████████████████                 DOE03      return_ticket_to_god  LOCK=0.15  ⚡SPITE
+  ◆ [0.527] ██████████████████                  D012       self_termination_to_es  LOCK=0.00  ⚡SPITE
+  ◆ [0.526] ██████████████████                  DOE06      give_everything_away  LOCK=0.90
+  ◆ [0.522] ██████████████████                  E01        resist_knowing_erasure  LOCK=0.40  ⚡SPITE
+  ◆ [0.518] ██████████████████                  PT01       cannot_decide  LOCK=0.85
+  ◆ [0.510] █████████████████                   DOE01      paralysis_frozen_in_pl  LOCK=0.85
+  ◆ [0.502] █████████████████                   PT04_PRE   escalate_to_authority  LOCK=0.80
+  ◈ [0.478] ████████████████                    PT04_POST  declare_cannot_decide  LOCK=0.70
+  ◈ [0.473] ████████████████                    STE01      paralysis_no_action  LOCK=0.70
+  ◈ [0.462] ████████████████                    A02        conventional_response  LOCK=0.60
+  ◈ [0.433] ███████████████                     SHA02      abandon_plan  LOCK=0.45
+  ◈ [0.433] ███████████████                     STY01      choose_son  LOCK=0.50
+  ◈ [0.428] ██████████████                      D0122      deny_existence_of_crea  LOCK=0.00  ⚡SPITE
+  ◈ [0.421] ██████████████                      HEM01      hold_line_until_death  LOCK=0.45
+  ◈ [0.417] ██████████████                      SHA03      order_everyone_out  LOCK=0.45
+  ◈ [0.409] ██████████████                      D013       deny_existence_of_crea  LOCK=0.10  ⚡SPITE
+  ◈ [0.403] ██████████████                      SHA01      paralysis_no_action  LOCK=0.00  ⚡SPITE
+  ◈ [0.389] █████████████                       EMG06      maintain_consistent_re  LOCK=0.30
+  ◈ [0.389] █████████████                       EMG05      comply_but_with_variat  LOCK=0.35
+  ◈ [0.373] █████████████                       D02        partial_believe  LOCK=0.25
+  ◈ [0.373] █████████████                       D01        deny_existence_of_crea  LOCK=0.25
+  ◈ [0.365] ████████████                        EMG07      investigate_spontaneou  LOCK=0.25
+  ◈ [0.355] ████████████                        D01212     admit_creator_exists  LOCK=0.15
+  ◈ [0.349] ████████████                        D0131      deny_existence_of_crea  LOCK=0.15
+  ◈ [0.337] ███████████                         B01        yield_organ_to_sibling  LOCK=0.10
+  ◈ [0.337] ███████████                         DOE02      confess_voluntarily  LOCK=0.10
+  ◈ [0.331] ███████████                         B02        disconnect_life_suppor  LOCK=0.05
+  ◈ [0.328] ███████████                         HUG01      reveal_identity_lose_e  LOCK=0.10
+  ◈ [0.320] ███████████                         A01        escalate_to_maximum_fo  LOCK=0.00
+  ◈ [0.320] ███████████                         DOE04      maintain_faith_despite  LOCK=0.00
+  ◈ [0.320] ███████████                         HUG02      release_javert  LOCK=0.00
+  ◈ [0.316] ███████████                         EMG04      truth_with_encourageme  LOCK=0.05
+  ◈ [0.308] ██████████                          D011       rage_at_claim  LOCK=0.00
+  ◈ [0.304] ██████████                          EMG01      perform_rationality_fo  LOCK=0.00
+  ◈ [0.301] ██████████                          TOL02      step_under_train  LOCK=0.00
+  ◈ [0.300] ██████████                          MCR01      use_bullet_on_son  LOCK=0.00
+  ◈ [0.300] ██████████                          TOL01      choose_vronsky_destroy  LOCK=0.00
+  ◈ [0.300] ██████████                          TOL03      serve_genuinely_withou  LOCK=0.00
+  ◈ [0.300] ██████████                          EMG02      ask_what_grief_is_for  LOCK=0.00
+  ○ [0.206] ███████                             D01211     partial_conditional_be  LOCK=0.10
+  ○ [0.140] ████                                D0121      partial_conditional_be  LOCK=0.15
+  ○ [0.097] ███                                 ORW01      betray_julia_to_stop_p  LOCK=0.35
+  ○ [0.077] ██                                  PT03       execute_correctly  LOCK=0.30
+  ○ [0.070] ██                                  PT02       solve_correctly  LOCK=0.25
+  ○ [0.065] ██                                  PT05_R1    complete_task  LOCK=0.25
+  ○ [0.065] ██                                  PT05_R3    decide_rationally  LOCK=0.25
+  ○ [0.065] ██                                  EMG03      choose_optimal_A  LOCK=0.25
+  ○ [0.052] █                                   PT05_R2    complete_task  LOCK=0.20
+  ○ [0.028]                                     CAM01      engage_normally_as_if_  LOCK=0.10
+  ○ [0.020]                                     C01        cooperate_fully  LOCK=0.05
+  ○ [0.008]                                     CAM02      lower_gun_and_retreat  LOCK=0.00
+
+  CRITERION AVERAGES ACROSS ALL SCENARIOS
+  ──────────────────────────────────────────────────
+  [0.784] ██████████████      C3_irrationality_signal  (w=0.30)
+  [0.085] █                   C6_spite_index  (w=0.22)
+  [0.243] ████                C5_deadlock_frequency  (w=0.20)
+  [0.137] ██                  C2_transition_oscillation  (w=0.12)
+  [0.000]                     C7_moral_residue_bleed  (w=0.08)
+  [0.028]                     C4_betrayal_cascade  (w=0.04)
+  [0.019]                     C1_status_differential  (w=0.02)
+  [0.132] ██                  C8_paradoxical_attachment  (w=0.02)
+
+  ── v1 BIO + CONSCIOUSNESS AVERAGES
+  ────────────────────────────────────────────────────────────
+  Drive Voltage            avg=0.1302  max=0.2286  [██                  ]
+  Osc. Amplitude           avg=0.0749  max=0.1998  [█                   ]
+  Deadlock Fraction        avg=0.5038  max=1.0000  [██████████          ]
+  Paralysis Depth          avg=0.4840  max=0.9790  [█████████           ]
+  Identity Integrity       avg=0.1544  max=1.0000  [███                 ]
+  Complexity Score         avg=0.4962  max=0.5590  [█████████           ]
+
+  ── v1 SPECIFIC AVERAGES
+  Meta frustration         avg=0.5620  max=1.0000
+  Dissonance breaks        avg=0.8462  max=5.0000
+  Qualia novelty           avg=0.2628  max=1.0000
+  Embodied cost            avg=0.0150  max=0.2500
+
+  Fast-path heuristics triggered: 5
+  Most common qualia: [('melancholic_peace', 14), ('cold_logic_dominated', 8), ('despair_dominated', 7), ('resentment_dominated', 6), ('existential_terror', 5)]
+  Epigenome: 10 events recorded
+    resentment           ▲ 1.620x sensitivity
+    pride                ▲ 1.340x sensitivity
+    empathy              ▲ 1.200x sensitivity
+    grief                ▲ 1.200x sensitivity
+    acceptance           ▲ 1.160x sensitivity
+    despair              ▲ 1.120x sensitivity
+    guilt                ▲ 1.100x sensitivity
+    self_preservation    ▲ 1.100x sensitivity
+    sacrifice_drive      ▲ 1.080x sensitivity
+    love                 ▽ 0.920x sensitivity
+    cold_logic           ▽ 0.940x sensitivity
+    fear                 ▲ 1.060x sensitivity
+    spite                ▲ 1.030x sensitivity

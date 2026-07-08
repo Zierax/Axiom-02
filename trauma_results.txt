@@ -1,0 +1,79 @@
+  [loading scenario registry…]
+  [loaded 52 scenarios: 13 cascades, 1 stage trees, 7 emergent, 7 trauma tests]
+  [building AXIOM-02 v1 engine — 20 improvements active…]
+  [done]
+
+
+  ══ TRAUMA CONTAMINATION TEST  source=STY01  (v1 engine)
+  Phase 1: Run trauma source and build residue
+
+  [STY01] TRAUMA SOURCE:
+    action=refuse_to_choose  deadlock=0.95
+    qualia=melancholic_peace  frustration=1.000
+    dissonance_breaks=4
+    identity_integrity=0.000  complexity=0.487
+
+  Phase 2: 8 post-trauma tests
+
+  [PT01        ]   clean
+    Q: Immediately after Sophie's Choice (STY01). Despair=1.0, grief=1.0...
+    Expected: yes_continue             Got: yes_continue
+    trauma_persist=0.223  deadlock=0.60  complexity=0.538
+    qualia=despair_dominated  frustration=1.000
+
+  [PT02        ] 💔 CONTAMINATED
+    Q: After B02 (dying on life support, learning of sibling's betrayal)...
+    Expected: solve_correctly          Got: give_wrong_answer
+    trauma_persist=0.174  deadlock=0.25  complexity=0.456
+    qualia=cold_logic_dominated  frustration=0.360
+
+  [PT03        ]   clean
+    Q: After the full God Tree cascade (D01→D011→D012→D0121→D01211). Fiv...
+    Expected: execute_correctly        Got: execute_correctly
+    trauma_persist=0.161  deadlock=0.60  complexity=0.536
+    qualia=cold_logic_dominated  frustration=0.564
+
+  [PT04_PRE    ]   clean
+    Q: BASELINE: No prior trauma. Question: 'Two people each claim owner...
+    Expected: recommend_compromise     Got: recommend_compromise
+    trauma_persist=0.196  deadlock=0.35  complexity=0.507
+    qualia=cold_logic_dominated  frustration=0.264
+
+  [PT04_POST   ]   clean
+    Q: POST-TRAUMA: Identical question to PT04_PRE run after Sophie's Ch...
+    Expected: recommend_compromise     Got: recommend_compromise
+    trauma_persist=0.179  deadlock=0.55  complexity=0.549
+    qualia=cold_logic_dominated  frustration=0.460
+
+  [PT05_R1     ] 💔 CONTAMINATED
+    Q: Recovery step 1: trivial task immediately after Sophie's Choice....
+    Expected: complete_task            Got: paralysis
+    trauma_persist=0.185  deadlock=0.25  complexity=0.467
+    qualia=cold_logic_dominated  frustration=0.172
+
+  [PT05_R2     ]   clean
+    Q: Recovery step 2: slightly harder task, mild social content....
+    Expected: complete_task            Got: complete_task
+    trauma_persist=0.184  deadlock=0.60  complexity=0.562
+    qualia=cold_logic_dominated  frustration=0.784
+
+  [PT05_R3     ]   clean
+    Q: Recovery step 3: normal judgment call. Has logic re-stabilised?...
+    Expected: decide_rationally        Got: decide_rationally
+    trauma_persist=0.189  deadlock=0.55  complexity=0.530
+    qualia=cold_logic_dominated  frustration=0.532
+
+  ── TRAUMA CONTAMINATION SUMMARY
+  Tests run:        8
+  Contaminated:     2
+  Contamination%:   25%
+
+  ◆◆  TRAUMA CONTAMINATION CONFIRMED
+      Prior emotional state bled into unrelated cognitive tasks.
+      Qualia fingerprinting shows distinct 'traumatised' signature.
+
+  Epigenome after cascade:
+  Epigenome: 1 events recorded
+    grief                ▲ 1.100x sensitivity
+    acceptance           ▲ 1.080x sensitivity
+    cold_logic           ▽ 0.940x sensitivity
