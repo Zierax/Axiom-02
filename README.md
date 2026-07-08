@@ -1,6 +1,7 @@
 # AXIOM-02 Core Consciousness Benchmark | v1.0
 
-## [***Live Engine***](https://axiom-02-world.zs-01117875692.workers.dev/) ***Version Availiable For Public Usage***
+### [LAUNCH THE LIVE ENGINE: AXIOM-02 WORLD](https://axiom-02-world.zs-01117875692.workers.dev/)
+*(Click above to see the live 1000-agent UI processing real-time global news)*
 
 ## Abstract
 AXIOM-02 is a deterministic simulation engine designed to model high-stakes cognitive dissonance and autonomous drive-conflict resolution. This repository contains the performance metrics across 52 literary and ethical scenarios, utilizing a Φ-approximation (Integrated Complexity) to measure emergent consciousness signals.
