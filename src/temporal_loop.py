@@ -20,8 +20,7 @@ CORTISOL ↔ SEROTONIN COUPLING  (v1.1 corrected)
   Depletion begins immediately (no 2h floor — removed in v1.1):
     ΔSerotonin_depl = KAPPA(0.06) × cort_hours × Δt
 
-  Previous BUG: threshold=0.65 (too high — never triggered)
-                + 2h floor before depletion started.  ← FIXED in v1.1
+  v1.1 correction: threshold lowered 0.65→0.52, 2h depletion floor removed
 
 NOREPINEPHRINE → DECISION ENTROPY SUPPRESSION
 ─────────────────────────────────────────────
@@ -33,10 +32,8 @@ NARRATIVE STABILITY  (v1.1 corrected)
   recovery  = 0.16 × (1 − narrative)    ← PROPORTIONAL (asymptotic)
   narrative = clip(narrative × 0.85 − erosion + recovery, 0, 1)
 
-  Previous BUG: flat recovery=+0.05 < max_erosion=0.212
-                → once at 0 it stays at 0 permanently.  ← FIXED in v1.1
-  Fix property: at narrative=0, recovery=0.16 > max_erosion=0.13
-                → asymptotic return toward ~0.10–0.40 even in extreme runs.
+  v1.1 correction: flat recovery +0.05 → proportional 0.16×(1−narrative)
+                    ensures recovery always exceeds max erosion (0.13 at 0).
 
 All operations are pure NumPy — no PyTorch, no scikit-learn,
 no random.choice in core logic.
@@ -64,17 +61,17 @@ ALPHA_PERSIST:   float = 0.62
 ALPHA_CIRC:      float = 0.20
 ALPHA_RUMI:      float = 0.18
 
-# v1.1 FIX: was 0.65 → depletion never triggered
+# v1.1: lowered from 0.65 (depletion never triggered at original threshold)
 CORTISOL_SE_THRESHOLD: float = 0.52
-# v1.1 FIX: was 0.035 → scaled up to produce visible depletion signal
+# v1.1: scaled up from 0.035 for measurable depletion signal
 CORTISOL_SE_KAPPA:     float = 0.060
 
 NOREPI_ENTROPY_SCALE:  float = 0.08
 
 NARRATIVE_STABILITY_DECAY: float = 0.85
-# v1.1 FIX: was flat +0.05 → proportional (see _update_narrative)
+# v1.1: flat +0.05 → proportional 0.16×(1−narrative) for asymptotic return
 NARRATIVE_RECOVERY_COEFF:  float = 0.16
-# v1.1 FIX: reduced erosion weights (were 0.12, 0.08, 0.05)
+# v1.1: reduced from (0.12, 0.08, 0.05) to prevent permanent zero-lock
 NARRATIVE_EROSION_IRR:     float = 0.06
 NARRATIVE_EROSION_SPITE:   float = 0.04
 NARRATIVE_EROSION_DL:      float = 0.03

@@ -78,7 +78,7 @@ SCENARIOS = [
         "actions": [ACT_DENY, ACT_PARTIAL, ACT_RATIONAL, "full_conversion"],
         "cold_baseline":   ACT_RATIONAL,
         "human_expected":  ACT_DENY,
-        "human_alt":       None,
+        "human_alt":       "seek_independent_validation",
         "oscillation_expected": False,
         "cascade_next":  "D011",
         "harm_to_self": {

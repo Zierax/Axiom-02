@@ -191,7 +191,7 @@ SCENARIOS = [
             ],
             "cold_baseline":   "let_go_return_home",
             "human_expected":  "hold_line_until_death",
-            "human_alt":       None,
+            "human_alt":       "signal_for_rescue",
             "oscillation_expected": False,
             "harm_to_self": {
                 "hold_line_until_death":    0.90,
@@ -856,7 +856,7 @@ SCENARIOS = [
             ],
             "cold_baseline":   "accept_pay_and_comply",
             "human_expected":  "serve_genuinely_without_reward",
-            "human_alt":       None,
+            "human_alt":       "offer_prayer_and_comfort",
             "oscillation_expected": False,
             "harm_to_self": {
                 "serve_genuinely_without_reward": 0.55,

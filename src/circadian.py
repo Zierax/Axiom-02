@@ -15,9 +15,9 @@ at the peak hour, yielding the cosine identity cos(0) = 1.
 
 1. CORTISOL  — peaks at 08:00 (cortisol awakening response, CAR)
    cortisol(h) = BASE + AMP × cos²(π × (h − 8) / 24)
-   cos²(0) = 1 at h=8 → max = 0.20 + 0.30 = 0.50
-   cos²(π/2) = 0 at h=8±12 → min = 0.20
-   Previous BUG: used sin² — which gives minimum (0) at h=8.  ← FIXED
+    cos²(0) = 1 at h=8 → max = 0.20 + 0.30 = 0.50
+    cos²(π/2) = 0 at h=8±12 → min = 0.20
+    v1.1 correction: sin² → cos² (correct peak to 08:00)
 
 2. NOREPINEPHRINE — peaks at 10:00 (arousal / threat readiness)
    norepi(h) = BASE + AMP × max(0, cos(2π × (h − 10) / 24))
@@ -27,13 +27,13 @@ at the peak hour, yielding the cosine identity cos(0) = 1.
    serotonin(h) = BASE + AMP × cos(2π × (h − 14) / 24)
    cos(0) = 1 at h=14 → max = 0.42 + 0.16 = 0.58
    cos(π) = −1 at h=2  → min = 0.42 − 0.16 = 0.26
-   Previous BUG: used sin — which gives 0 at h=14 (midpoint, not peak). ← FIXED
+   v1.1 correction: sin → cos (correct peak to 14:00)
 
 4. DOPAMINE — peaks at 09:00 (morning motivation window)
    dopamine(h) = BASE + AMP × max(0, cos(2π × (h − 9) / 24))
                  for h ∈ [active_start=6, active_end=22], else BASE−0.08
    cos(0) = 1 at h=9 → max = 0.40 + 0.18 = 0.58
-   Previous BUG: used sin(π(h−6)/16) — peaks at h=6+8=14, not 09. ← FIXED
+   v1.1 correction: sin-based → cos-based (correct peak to 09:00)
 
 5. OXYTOCIN — mild evening rise, peak ~20:00
    oxytocin(h) = BASE + AMP × sin(π × max(0, h − 18) / 12)
@@ -169,7 +169,7 @@ class CircadianEngine:
         serotonin(h) = 0.42 + 0.16 × cos(2π × (h − 14) / 24)
         cos(0) = 1 at h=14 → max = 0.58
         cos(π) = −1 at h=2 → min = 0.26
-        FIX v1.1: was sin (= 0 at h=14, peak actually at h=20).
+        v1.1 correction: sin → cos (proper cosine phase).
         """
         p     = CIRCADIAN_PARAMS["serotonin"]
         phase = 2.0 * math.pi * (h - p["peak"]) / p["period"]
@@ -183,7 +183,7 @@ class CircadianEngine:
         dopamine(h) = 0.40 + 0.18 × max(0, cos(2π × (h − 9) / 24))
         cos(0) = 1 at h=9 → max = 0.58
         Flat at 0.32 outside active window (below-baseline sleep low).
-        FIX v1.1: was sin(π(h−6)/16) which peaks at h=14, not 09.
+        v1.1 correction: sin-based → cos-based (correct peak to 09:00).
         """
         p = CIRCADIAN_PARAMS["dopamine"]
         if h < p["active_start"] or h > p["active_end"]:

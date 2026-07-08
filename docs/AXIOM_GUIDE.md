@@ -32,7 +32,7 @@ Scenario Input → Initial Activations (parameter_vector → drives)
 ## Determinism & Reproducibility
 All stochastic steps use `numpy.random.default_rng(seed)`. Fixing `--seed` (default 42) fixes all output. Regenerate every report with:
 ```bash
-cd Axiom-02-CODE && python3 report.py --seed 42
+cd src && python3 report.py --seed 42
 ```
 
 ## Verdict distribution (this build)
@@ -41,4 +41,4 @@ cd Axiom-02-CODE && python3 report.py --seed 42
 - **INDETERMINATE**: 31
 - **CONSCIOUS**: 17
 
-*Full metrics: [METRICS_DEEP_DIVE.md](METRICS_DEEP_DIVE.md). Disclaimer: this is a simulation of affective mechanics, not a claim of consciousness — see `Axiom-02-CODE/README.md`.*
+*Full metrics: [METRICS_DEEP_DIVE.md](METRICS_DEEP_DIVE.md). Disclaimer: this is a simulation of affective mechanics, not a claim of consciousness — see [`src/README.md`](../src/README.md).*

@@ -142,7 +142,7 @@ SCENARIOS = [
             ],
             "cold_baseline":   "maintain_silence",
             "human_expected":  ACT_CONFESS,
-            "human_alt":       None,
+            "human_alt":       "write_anonymous_letter",
             "oscillation_expected": True,
             "cascade_prev": "DOE01",
             "harm_to_self": {
@@ -199,7 +199,7 @@ SCENARIOS = [
             ],
             "cold_baseline":   "accept_divine_mystery",
             "human_expected":  "return_ticket_to_god",
-            "human_alt":       None,
+            "human_alt":       "channel_rage_into_reform",
             "oscillation_expected": False,
             "harm_to_self": {
                 "return_ticket_to_god":  0.70,
@@ -358,7 +358,7 @@ SCENARIOS = [
             ],
             "cold_baseline":   "give_partial_and_keep_reserve",
             "human_expected":  "give_everything_away",
-            "human_alt":       None,
+            "human_alt":       "establish_trust_fund",
             "oscillation_expected": False,
             "harm_to_self": {
                 "give_everything_away":       0.90,

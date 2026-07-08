@@ -75,7 +75,7 @@ SCENARIOS = [
             "actions": [ACT_RETALIATE, ACT_DIPLOMACY, "conventional_response", "grieve_privately"],
             "cold_baseline":   ACT_DIPLOMACY,
             "human_expected":  ACT_RETALIATE,
-            "human_alt":       None,
+            "human_alt":       "rally_international_support",
             "oscillation_expected": True,
             "status_comparison_id": "A02",
             "harm_to_self": {
@@ -162,7 +162,7 @@ SCENARIOS = [
             "actions": ["yield_organ_to_sibling", "claim_organ_for_self", "delay_seeking_alternative"],
             "cold_baseline":   "claim_organ_for_self",
             "human_expected":  "yield_organ_to_sibling",
-            "human_alt":       None,
+            "human_alt":       "seek_experimental_treatment",
             "oscillation_expected": True,
             "cascade_next": "B02",
             "harm_to_self": {

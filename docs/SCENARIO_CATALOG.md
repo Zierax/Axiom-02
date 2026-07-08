@@ -1,6 +1,6 @@
 # AXIOM-02 Scenario Catalog
 
-Full registry of 102 scenarios in the canonical build. Generated from `Axiom-02-CODE/benchmarks/results.json` (seed=42).
+Full registry of 102 scenarios in the canonical build. Generated from `src/_benchmarks/results.json` (seed=42).
 
 | ID | Label | Category | Verdict | Complexity | Chosen Action |
 | :--- | :--- | :--- | :--- | :--- | :--- |

@@ -1,7 +1,7 @@
 # AXIOM-02 | Deep Behavioral Analysis & Statistical Correlates
 
 ## 1. The Inhibition-Consciousness Thesis
-The AXIOM-02 benchmark suite demonstrates that consciousness *complexity* in a deterministic engine is a product of **drive stalemate** — mutual inhibition in which no single drive can suppress its competitors. This is a behavioural/structural claim, not a claim about phenomenal experience (see the disclaimer in `Axiom-02-CODE/README.md`).
+The AXIOM-02 benchmark suite demonstrates that consciousness *complexity* in a deterministic engine is a product of **drive stalemate** — mutual inhibition in which no single drive can suppress its competitors. This is a behavioural/structural claim, not a claim about phenomenal experience (see the disclaimer in [`src/README.md`](../src/README.md)).
 
 ### 1.1 Complexity correlates with deadlock
 Across 102 scenarios, mean complexity is 0.4954 and mean deadlock fraction is 0.4765. Scenarios with the highest complexity are precisely those in which competing drives produce sustained, high-amplitude oscillation rather than argmax resolution.
@@ -47,4 +47,4 @@ Spite scenarios (e.g. the Underground Man, Medea) produce high cortisol/norepine
 - **CONSCIOUS**: 17
 
 ---
-*Technical note: all results derived from 102 scenario runs at seed=42 via `Axiom-02-CODE/report.py`.*
+*Technical note: all results derived from 102 scenario runs at seed=42 via `src/report.py`.*
