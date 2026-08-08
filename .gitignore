@@ -35,7 +35,3 @@ venv/
 # Runtime state
 epigenome.json
 results.json
-
-# Generated figures
-paper/figures/*.png
-paper/figures/*.pdf

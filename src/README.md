@@ -94,8 +94,10 @@ axiom02/                    THE MODEL PACKAGE (src/axiom02/)
 
 The scenario dataset is sourced **once**, via `axiom02.core.scenario_loader.load_all()`,
 which every consumer (engine, probe, reporter) shares. There is no second hard-coded copy.
-CLI entry points live in `src/main.py` (probe, cascade, tree, trauma, emergent, export)
-and `src/report.py` (deterministic regenerator → `src/benchmarks/`).
+CLI entry points live in `src/main.py` (probe, cascade, tree, trauma, emergent, export,
+stream, ruminator-probe, circadian-plot, stress-test, api) and `src/report.py`
+(deterministic regenerator → `src/benchmarks/`). The streaming harness lives in
+`src/stream_runner.py` and is also reachable through `main.py stream`.
 
 ---
 
@@ -124,6 +126,16 @@ python3 main.py probe NV-D01          # single hard-edge scenario
 python3 main.py probe-all             # all scenarios
 python3 main.py emergent              # emergent deliberative complexity suite
 python3 report.py --seed 42           # regenerate benchmarks/ (results.json + charts)
+
+# Temporal emotion loop / streaming harness
+python3 main.py stream --preset dostoevsky
+python3 main.py stream B01,B02 --json > out.json
+python3 main.py ruminator-probe B02
+python3 main.py circadian-plot
+python3 main.py stress-test
+
+# Optional HTTP API (pip install "axiom-02[api]")
+python3 main.py api --host 127.0.0.1 --port 8000
 ```
 
 All runs are deterministic for a fixed `--seed` (default 42). `report.py` re-emits

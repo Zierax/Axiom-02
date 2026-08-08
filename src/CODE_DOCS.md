@@ -64,7 +64,14 @@ tuple keys encoded/restored).
 
 ## `main.py` / `report.py` / `stream_runner.py` (top-level `src/`)
 - `main.py` — CLI: `probe`, `cascade`, `tree`, `trauma-test`, `compare`, `emergent`,
-  `probe-all`, `report`, `export`.
+  `probe-all`, `epigenome`, `qualia`, `export`, `stream`, `ruminator-probe`,
+  `circadian-plot`, `stress-test`, `api`.
 - `report.py` — deterministic regenerator → `benchmarks/` (results.json, descriptions,
   charts).
-- `stream_runner.py` — temporal/ruminator/circadian streaming harness.
+- `stream_runner.py` — temporal/ruminator/circadian streaming harness (also reachable as
+  `main.py stream`).
+
+## `axiom02/api.py`
+Optional FastAPI HTTP interface. `build_app(seed)` exposes `GET /`, `/health`,
+`/scenarios`, `/scenarios/{id}`, and `POST /run`. Requires the `api` extra
+(`pip install "axiom-02[api]"`); served via `python main.py api`.

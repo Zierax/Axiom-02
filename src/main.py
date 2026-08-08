@@ -13,10 +13,16 @@ Usage
   python main.py cascade DOE01        # Raskolnikov chain
   python main.py compare A01 A02      # Status differential
   python main.py emergent             # Emergent consciousness
-  python main.py probe-all            # Full 52-scenario suite
+  python main.py probe-all            # Full 102-scenario suite
   python main.py epigenome            # View accumulated epigenome state
   python main.py qualia DOE01         # Qualia analysis for one scenario
   python main.py export > out.json    # JSON export
+  python main.py stream --preset dostoevsky
+  python main.py stream B01,B02 --json > out.json
+  python main.py ruminator-probe B02
+  python main.py circadian-plot
+  python main.py stress-test
+  python main.py api                  # FastAPI server (pip install "axiom-02[api]")
 """
 
 import sys, os, json, argparse
@@ -32,6 +38,9 @@ from axiom02.core.probe import ConsciousnessProbe, CRITERION_WEIGHTS
 from axiom02.core.bio_metrics import BioMetricsComputer, BioMetricsResult
 from axiom02.core.epigenetics import Epigenome, AssociativeMemory
 from axiom02.core.drives import MoralResidueTracker
+
+from stream_runner import (cmd_stream, cmd_ruminator_probe, cmd_circadian_plot,
+                           cmd_stress_test, PRESETS)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -478,6 +487,19 @@ def cmd_export(reg, engine, comp, seed=42):
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+def cmd_api(args, seed):
+    try:
+        import uvicorn
+        from axiom02.api import build_app
+    except ImportError:
+        print("  The API server needs optional dependencies.")
+        print('  Install with:  pip install "axiom-02[api]"')
+        return 1
+    print(f"  [AXIOM-02 API  seed={seed}  http://{args.host}:{args.port}  /docs]")
+    uvicorn.run(build_app(seed=seed), host=args.host, port=args.port, log_level="warning")
+    return 0
+
+
 def parse_args():
     p = argparse.ArgumentParser(description="AXIOM-02")
     sub = p.add_subparsers(dest="command")
@@ -489,12 +511,39 @@ def parse_args():
         if cmd == "compare":
             sp.add_argument("id_a"); sp.add_argument("id_b")
         sp.add_argument("--seed", type=int, default=42)
+
+    sp = sub.add_parser("stream")
+    sp.add_argument("scenarios", nargs="?", default="")
+    sp.add_argument("--preset",   default="")
+    sp.add_argument("--cascade",  default="")
+    sp.add_argument("--category", default="")
+    sp.add_argument("--all",      action="store_true")
+    sp.add_argument("--start-hour",         type=float, default=8.0)
+    sp.add_argument("--hours-per-scenario", type=float, default=1.0)
+    sp.add_argument("--seed",               type=int,   default=42)
+    sp.add_argument("--json",               action="store_true")
+
+    sp2 = sub.add_parser("ruminator-probe")
+    sp2.add_argument("scenario_id")
+
+    sub.add_parser("circadian-plot")
+    sub.add_parser("stress-test")
+
+    sp = sub.add_parser("api")
+    sp.add_argument("--host", default="127.0.0.1")
+    sp.add_argument("--port", type=int, default=8000)
+    sp.add_argument("--seed", type=int, default=42)
     return p.parse_args()
 
 
 def main():
     args  = parse_args()
     seed  = getattr(args, "seed", 42)
+
+    if args.command == "circadian-plot":
+        cmd_circadian_plot(args)
+        return
+
     reg, engine, probe, comp, epi, mem = build_system(seed)
 
     cmd = args.command
@@ -509,6 +558,11 @@ def main():
     elif cmd == "epigenome":   cmd_epigenome(engine)
     elif cmd == "qualia":      cmd_qualia(reg, engine, args.scenario_id, seed)
     elif cmd == "export":      cmd_export(reg, engine, comp, seed)
+    elif cmd == "stream":              cmd_stream(args, reg, engine, comp)
+    elif cmd == "ruminator-probe":     cmd_ruminator_probe(args, reg, engine, comp)
+    elif cmd == "circadian-plot":      cmd_circadian_plot(args)
+    elif cmd == "stress-test":         cmd_stress_test(args, reg, engine, comp)
+    elif cmd == "api":                 raise SystemExit(cmd_api(args, seed))
 
 
 if __name__ == "__main__":
