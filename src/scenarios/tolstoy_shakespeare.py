@@ -14,7 +14,7 @@ for _p in (_root, _here):
     if _p not in _sys.path:
         _sys.path.insert(0, _p)
 
-from drives import MicroEvent
+from axiom02.core.drives import MicroEvent
 
 # ── Constants ──────────────────────────────────────────────────────────────────
 CAT_POLITICAL        = "political_power"

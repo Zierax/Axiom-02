@@ -48,15 +48,17 @@ from typing import Dict, List, Optional
 import numpy as np
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
+# Ensure src/ is on sys.path so `import axiom02` resolves when running
+# `python src/stream_runner.py` from the project root.
 if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 
-from scenario_loader import load_all, get_cascade_chain
-from emotion_engine import EmotionEngine
-from bio_metrics import BioMetricsComputer
-from epigenetics import Epigenome, AssociativeMemory
-from temporal_loop import TemporalEmotionLoop, TemporalStepRecord
-from circadian import CircadianEngine
+from axiom02.core.scenario_loader import load_all, get_cascade_chain
+from axiom02.core.engine import EmotionEngine
+from axiom02.core.bio_metrics import BioMetricsComputer
+from axiom02.core.epigenetics import Epigenome, AssociativeMemory
+from axiom02.modulators.temporal_loop import TemporalEmotionLoop, TemporalStepRecord
+from axiom02.modulators.circadian import CircadianEngine
 
 # ── Stream presets ─────────────────────────────────────────────────────────────
 
@@ -276,7 +278,7 @@ def cmd_circadian_plot(_args) -> None:
     print(f"  Threshold={0.52}  Kappa={0.060}  starts at H=08")
     print()
 
-    from temporal_loop import ModulatorPropagator, TemporalModulatorState
+    from axiom02.modulators.temporal_loop import ModulatorPropagator, TemporalModulatorState
 
     # SUSTAINED stress: scenario_mods keeps cortisol high every step
     SUSTAINED_STRESS_MODS = {

@@ -1,16 +1,16 @@
 [build-system]
 requires = ["setuptools>=68"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "axiom-02"
-version = "1.0.0"
+version = "2.0.0"
 description = "A deterministic simulation engine for modeling high-stakes cognitive dissonance and drive-conflict resolution."
 readme = "src/README.md"
 requires-python = ">=3.11"
 license = {text = "CC BY-NC 4.0"}
 authors = [{name = "Zierax"}]
-keywords = ["consciousness", "cognitive-science", "simulation", "emotion-modeling", "decision-making"]
+keywords = ["deliberative-complexity", "cognitive-science", "simulation", "emotion-modeling", "decision-making", "moral-reasoning"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -28,6 +28,22 @@ dependencies = [
     "matplotlib>=3.8",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.1.0", "mypy>=1.0", "pre-commit"]
+
 [project.urls]
 Homepage = "https://github.com/Zierax/Axiom-02"
 Repository = "https://github.com/Zierax/Axiom-02"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "W", "I"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true

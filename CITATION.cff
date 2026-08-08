@@ -2,12 +2,11 @@ cff-version: 1.2.0
 message: "If you use this software in academic work, please cite it as below."
 title: "AXIOM-02: A Deterministic Simulation Engine for Modeling High-Stakes Cognitive Dissonance and Drive-Conflict Resolution"
 authors:
-  - family-names: "Zierax"
-    given-names: ""
-    alias: "Zierax"
-    orcid: ""
-version: 1.0.0
-date-released: 2026
+  - family-names: "Salah"
+    given-names: "Ziad"
+    orcid: "https://orcid.org/0009-0002-6813-2416"
+version: 2.0.0
+date-released: 2026-08-08
 license: "CC-BY-NC-4.0"
 repository-code: "https://github.com/Zierax/Axiom-02"
 url: "https://github.com/Zierax/Axiom-02"

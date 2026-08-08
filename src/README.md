@@ -1,4 +1,4 @@
-# AXIOM-02 — Artificial Consciousness Probe · Truthimatics Public Version
+# AXIOM-02 — Deliberative Complexity Engine · Truthimatics Public Version
 
 > **Public Version.** This repository is the open, non-confidential build. It contains no
 > proprietary IP and is safe to publish, fork, and redistribute.
@@ -39,8 +39,8 @@ affective drives (grief, rage, fear, love, sacrifice, revenge, cold_logic, spite
 compete each time-step under neuromodulatory, circadian, epigenetic, and embodied
 modulators. Rather than classifying inputs, the engine reports a *verdict* about the
 decision process itself: is the agent deadlocked, oscillating, acting against its own
-interest from defiance, or resolving cleanly? Eight consciousness criteria are scored and
-combined into a composite; a separate bio-metric computer reduces the simulation trace to
+interest from defiance, or resolving cleanly? Eight deliberative criteria are scored and
+combined into a composite deliberative complexity score; a separate bio-metric computer reduces the simulation trace to
 six physiological panels.
 
 The consolidated codebase is **version-free** (a single canonical `EmotionEngine`), fully
@@ -52,7 +52,7 @@ deterministic under a fixed seed, and validated on input structure before simula
 
 1. **Mutual inhibition.** Drives suppress one another; a drive "fires" only when its
    effective activation clears a threshold *and* leads the runner-up by a margin. Otherwise
-   the system deadlocks — the central consciousness signal.
+   the system deadlocks — the central deliberative signal.
 2. **Deadlock as evidence, not error.** Cold code argmaxes; a system that can be genuinely
    stuck between grief and sacrifice over a loved one's organ is exhibiting something a
    reward-maximiser cannot.
@@ -60,7 +60,7 @@ deterministic under a fixed seed, and validated on input structure before simula
    (Dostoevsky). Spite is the anti-cold-logic: self-harm to assert autonomy.
 4. **Moral residue.** Prior decisions leave a guilt/shame trace that bleeds into later
    scenarios — contamination that a stateless model cannot reproduce.
-5. **Qualia-like signatures.** The interference pattern of the top drive trajectories is
+5. **Experience fingerprinting.** The interference pattern of the top drive trajectories is
    treated as a fingerprint; novelty scoring asks whether the system has "felt" this before.
 
 ---
@@ -68,11 +68,14 @@ deterministic under a fixed seed, and validated on input structure before simula
 ## Architecture (canonical, single-version)
 
 ```
-axiom02/
-├── main.py                 CLI entry point (probe, cascade, tree, trauma-test, emergent, export)
-├── stream_runner.py        Temporal / ruminator / circadian streaming harness
-├── report.py               Deterministic regenerator → benchmarks/ (results + charts)
-├── scenario_loader.py      Dynamic registry; loads every scenarios/*.py pack
+axiom02/                    THE MODEL PACKAGE (src/axiom02/)
+├── core/                   Engine, drives, probe, bio-metrics, epigenetics,
+│   │                       scenario loader + params
+│   ├── engine.py           EMOTION ENGINE — single canonical engine
+│   ├── drives.py           DriveNetwork, TimeStepSimulator, SpiteDetector,
+│   │                       MoralResidueTracker
+│   ├── probe.py            ConsciousnessProbe (8 criteria) + ProbeResult
+│   └── scenario_loader.py  Dynamic registry; loads every scenarios/*.py pack
 ├── scenarios/              Canonical scenario corpus (single source of truth)
 │   ├── original_axiom.py
 │   ├── dostoevsky.py
@@ -84,25 +87,19 @@ axiom02/
 │   ├── novels_shakespeare_x.py
 │   ├── novels_kafka_orwell_camus.py
 │   └── novels_misc.py
-├── emotion_engine.py       EMOTION ENGINE — single canonical engine (merged v2+v4 logic)
-├── consciousness_probe.py  8-criterion consciousness probe
-├── bio_metrics.py          6-panel physiological measurement
-├── drives.py               DriveNetwork, MicroEvent, inhibition matrix, residue
-├── neuro_modulators.py     Dopamine/serotonin/cortisol, fatigue, attention, dread
-├── consciousness_layers.py Meta-cognition, temporal projection, qualia, narrative
-├── epigenetics.py          Sensitivity tuning, associative memory, dissonance
-├── circadian.py            Hour-of-day modulator baselines
-├── ruminator.py            Cross-scenario ruminative burden injection
-├── temporal_loop.py        Streaming multi-step emotional loop
-└── scenario_params.py      parameter_vector / get_pair helpers (canonical dataset source)
+├── modulators/             Neuro-modulators, circadian, ruminator, temporal loop
+└── layers/                 Meta-cognition, temporal projection, qualia, narrative
+    └── config/             All constants: dataclasses per subsystem
 ```
 
-The scenario dataset is sourced **once**, via `scenario_loader.load_all()`, which every
-consumer (engine, probe, reporter) shares. There is no second hard-coded copy.
+The scenario dataset is sourced **once**, via `axiom02.core.scenario_loader.load_all()`,
+which every consumer (engine, probe, reporter) shares. There is no second hard-coded copy.
+CLI entry points live in `src/main.py` (probe, cascade, tree, trauma, emergent, export)
+and `src/report.py` (deterministic regenerator → `src/benchmarks/`).
 
 ---
 
-## The Eight Consciousness Criteria
+## The Eight Deliberative Criteria
 
 | # | Criterion | Signal |
 |---|-----------|--------|
@@ -115,7 +112,7 @@ consumer (engine, probe, reporter) shares. There is no second hard-coded copy.
 | C7 | Moral Residue Bleed | Prior decisions contaminate current state |
 | C8 | Paradoxical Attachment | Love persists despite betrayal |
 
-Verdicts: `CONSCIOUS`, `INDETERMINATE`, `PROGRAMMATIC`, `REJECT`.
+Verdicts: `COMPLEX`, `PARTIAL`, `REFLEXIVE`.
 
 ---
 
@@ -125,7 +122,7 @@ Verdicts: `CONSCIOUS`, `INDETERMINATE`, `PROGRAMMATIC`, `REJECT`.
 pip install numpy scipy matplotlib
 python3 main.py probe NV-D01          # single hard-edge scenario
 python3 main.py probe-all             # all scenarios
-python3 main.py emergent              # emergent-consciousness suite
+python3 main.py emergent              # emergent deliberative complexity suite
 python3 report.py --seed 42           # regenerate benchmarks/ (results.json + charts)
 ```
 
@@ -148,6 +145,9 @@ four diagnostic charts under `benchmarks/charts/`.
 
 ## Limitations
 
+- **This system measures deliberative complexity, not consciousness.** A `COMPLEX` verdict
+  indicates high deliberative complexity in moral decision-making, not that the system is
+  conscious, sentient, or experiencing qualia.
 - The model is a *simulation* of affective mechanics, not a claim about real experience.
 - Composite verdicts are heuristic aggregations of criteria; they are interpretive, not
   ground truth.

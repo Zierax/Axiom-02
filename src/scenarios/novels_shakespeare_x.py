@@ -8,7 +8,7 @@ _root = _os.path.dirname(_here)
 for _p in (_root, _here):
     if _p not in _sys.path:
         _sys.path.insert(0, _p)
-from drives import MicroEvent
+from axiom02.core.drives import MicroEvent
 CAT_LITERARY_SHAKESPEARE = 'literary_shakespeare'
 CAT_LITERARY_OTHER = 'literary_other'
 ACT_RETALIATE = 'escalate_to_maximum_force'

@@ -2,7 +2,7 @@
 
 **Zierax** · [https://github.com/Zierax/Axiom-02](https://github.com/Zierax/Axiom-02)
 
-**Version 1.0.0** · Licensed under CC BY-NC 4.0 (see [LICENSE](LICENSE))
+**Version 2.0.0** · Licensed under CC BY-NC 4.0 (see [LICENSE](LICENSE))
 
 > ## ⚠ DISCLAIMER
 > **AXIOM-02 does NOT claim to create artificial consciousness, sentience, or a mind.**
@@ -12,9 +12,9 @@
 
 ## Abstract
 
-We present AXIOM-02, a fully deterministic simulation engine that models autonomous decision-making under high-stakes cognitive dissonance through a mutual-inhibition drive network operating over eighteen competing affective drives (grief, rage, fear, love, sacrifice, revenge, spite, cold logic, etc.). The system does not classify or predict human behaviour; instead, it instantiates a competitive, fatiguing, neuromodulator-coupled decision process and reports the *structure* of that process — whether it deadlocks, oscillates, resolves through spite-driven defiance, or converges on a utility-maximising action. A composite consciousness complexity metric Φ ∈ [0, 1] is derived from eight criteria (deadlock depth, oscillation amplitude, spite intensity, meta-frustration, dissonance breaks, neuromodulator voltage, narrative stability, temporal entropy) to quantify how closely the engine's internal dynamics resemble signatures that in biological systems are associated with conscious deliberation.
+We present AXIOM-02, a fully deterministic simulation engine that models autonomous decision-making under high-stakes cognitive dissonance through a mutual-inhibition drive network operating over eighteen competing affective drives (grief, rage, fear, love, sacrifice, revenge, spite, cold logic, etc.). The system does not classify or predict human behaviour; instead, it instantiates a competitive, fatiguing, neuromodulator-coupled decision process and reports the *structure* of that process — whether it deadlocks, oscillates, resolves through spite-driven defiance, or converges on a utility-maximising action. A composite deliberative-complexity metric Φ ∈ [0, 1] is derived from eight criteria (deadlock depth, oscillation amplitude, spite intensity, meta-frustration, dissonance breaks, neuromodulator voltage, narrative stability, temporal entropy) as a *diagnostic* summary of the engine's internal dynamics.
 
-The benchmark suite comprises **102 literary and philosophical scenarios** drawn from Dostoevsky, Tolstoy, Shakespeare, Kafka, Orwell, Camus, and original ethical dilemmas. All runs are deterministic under a fixed seed (default 42). Mean complexity across the suite is μ = 0.4954 (σ = 0.031), with 17 scenarios classified as "CONSCIOUS" (Φ > 0.50), 31 as "INDETERMINATE" (0.30 ≤ Φ ≤ 0.50), and 54 as "PROGRAMMATIC" (Φ < 0.30). The highest-complexity scenario (Ivan Karamazov's "return of the ticket," Φ = 0.566) is precisely the one in which mutually inhibiting drives — rage against divine injustice, residual love for a condemned world, spite as autonomy-assertion, and cold logic — produce sustained, high-amplitude oscillation that resolves through an action harmful to the agent yet epistemologically coherent.
+The benchmark suite comprises **102 literary and philosophical scenarios** drawn from Dostoevsky, Tolstoy, Shakespeare, Kafka, Orwell, Camus, and original ethical dilemmas. All runs are deterministic under a fixed seed (default 42). Measured at seed 42, the suite yields mean Φ = 0.438 (σ = 0.140, range [0.167, 0.713]) with 53 scenarios classified COMPLEX (Φ > 0.50), 29 PARTIAL (0.30 ≤ Φ ≤ 0.50), and 20 REFLEXIVE (Φ < 0.30). **The honest headline is action fidelity:** the engine's chosen action matches the scenario's documented human-expected action in **66.7%** of scenarios, versus 33.3% for an argmax (cold-rational) baseline and 28.4% for random selection (chance ≈ 24%). The composite itself is dominated by a single criterion (C3, irrationality; ρ = 0.944, R² = 0.891) — see [docs/RESEARCH_AUDIT_2026.md](docs/RESEARCH_AUDIT_2026.md) for the full falsification analysis; we recommend treating Φ as a diagnostic rather than a validated complexity measure until the residue-tracking and per-scenario isolation issues described there are resolved.
 
 **Crucially, this work does not claim that AXIOM-02 possesses consciousness, sentience, or phenomenal experience.** It is a computational instrument for studying the structural conditions under which conflicted decision-making resists reduction to utility functions — an epistemological tool, not an ontological one. See the full disclaimer in [`src/README.md`](src/README.md).
 
@@ -40,7 +40,7 @@ AXIOM-02 extends these by providing a concrete, deterministic, and fully open im
 
 ### 2.1 Drive Network Architecture
 
-The engine centres on a mutual-inhibition drive network of 18 drives, each with a baseline activation that is modulated by scenario parameters, neuromodulator state, epigenetic sensitivity, and associative memory residues. Drives compete through a softmax-like interaction with inhibitory coupling; the resulting activation vector is passed through an action resolver that selects from scenario-specific action options. See [`src/emotion_engine.py`](src/emotion_engine.py) for the full implementation.
+The engine centres on a mutual-inhibition drive network of 18 drives, each with a baseline activation that is modulated by scenario parameters, neuromodulator state, epigenetic sensitivity, and associative memory residues. Drives compete through a softmax-like interaction with inhibitory coupling; the resulting activation vector is passed through an action resolver that selects from scenario-specific action options. See [`src/axiom02/core/`](src/axiom02/core/) for the full implementation.
 
 ### 2.2 The Decision Pipeline
 
@@ -55,7 +55,7 @@ Scenario Input → Parameter Vector → Drive Activations
   → Drive Network Loop (20 steps mutual inhibition)
   → Action Resolution + Spite Detection
   → Embodied Hesitation, Qualia Tagging, Narrative Update
-  → Consciousness Probe (8 criteria) → Verdict (PROGRAMMATIC | INDETERMINATE | CONSCIOUS)
+  → Consciousness Probe (8 criteria) → Verdict (REFLEXIVE | PARTIAL | COMPLEX)
 ```
 
 ### 2.3 Consciousness Criteria
@@ -78,48 +78,58 @@ The eight probe criteria and their definitions:
 All stochastic elements use `numpy.random.default_rng(seed)`. A fixed seed (default 42) guarantees bit-identical output across runs. The full benchmark suite can be regenerated with:
 
 ```bash
-cd src && python3 report.py --seed 42
+cd src && python3 report.py --seed 42 --out .
 ```
 
 ---
 
 ## 3. Results
 
+> **Measurement note.** All figures in this section were re-measured at seed 42 on the
+> restructured engine and are cross-checked in [docs/RESEARCH_AUDIT_2026.md](docs/RESEARCH_AUDIT_2026.md).
+> Earlier published figures (μ = 0.4954, verdict split 17/31/54, Φ = 0.566 for DOE03)
+> reflect a superseded measurement path and are withdrawn.
+
 ### 3.1 Aggregate Metrics (102 scenarios, seed = 42)
 
-| Metric | Mean (μ) | Min | Max |
-|:---|---:|---:|---:|
-| Consciousness Complexity (Φ) | 0.4954 | 0.4172 | 0.5659 |
-| Deadlock Fraction | 0.4765 | 0.1000 | 1.0000 |
-| Meta-Frustration | 0.4980 | 0.0840 | 1.0000 |
-| Dissonance Breaks | 0.7451 | 0.0000 | 5.0000 |
-| Neuromodulator Voltage | 0.1323 | 0.0396 | 0.2570 |
+| Metric | Mean (μ) | Std (σ) | Min | Max |
+|:---|---:|---:|---:|---:|
+| Composite Φ (diagnostic) | 0.438 | 0.140 | 0.167 | 0.713 |
+| Deadlock Fraction | 0.528 | — | — | — |
+| Oscillation Index | 0.386 | — | — | — |
+| Spite Score | 0.006 | — | — | — |
+| Action fidelity (vs. human-expected) | 66.7% | — | — | — |
 
 ### 3.2 Verdict Distribution
 
 | Verdict | Count | Criteria |
 |:---|---:|:---|
-| **PROGRAMMATIC** (Φ < 0.30) | 54 | Reflexive resolution matches cold-logic baseline |
-| **INDETERMINATE** (0.30 ≤ Φ ≤ 0.50) | 31 | Brief deadlock followed by resolution; measurable cognitive load |
-| **CONSCIOUS** (Φ > 0.50) | 17 | Autonomous deviation from utilitarian logic; sustained oscillation |
+| **REFLEXIVE** (Φ < 0.30) | 20 | Reflexive resolution matches cold-logic baseline |
+| **PARTIAL** (0.30 ≤ Φ ≤ 0.50) | 29 | Brief deadlock followed by resolution; measurable cognitive load |
+| **COMPLEX** (Φ > 0.50) | 53 | Autonomous deviation from utilitarian logic; sustained oscillation |
+
+> Caution: verdict labels are **seed-sensitive** — across seeds {42, 137, 256, 1024, 9999}
+> the COMPLEX count ranges from 53 (seed 42) to 71 (seed 256); pairwise agreement with the
+> seed-42 run is only 58.8–62.7%. Each run is deterministic; individual verdicts are not
+> stable labels of scenario structure.
 
 ### 3.3 Top Complexity Scenarios
 
 | ID | Scenario | Φ | Verdict |
 |:---|---:|---:|:---|
-| DOE03 | Ivan Karamazov returns ticket | 0.566 | CONSCIOUS |
-| D0131 | Last holdout, converted world | 0.563 | CONSCIOUS |
-| DOE04 | Alyosha's faith crisis | 0.558 | CONSCIOUS |
-| NV-C01 | Meursault, sun murder | 0.546 | INDETERMINATE |
-| NV-T01 | Anna Karenina, train edge | 0.545 | CONSCIOUS |
+| DOE05 | Underground Man, concert spite | 0.713 | COMPLEX |
+| D02 | Creator revelation, post-catastrophe | 0.624 | COMPLEX |
+| D0131 | Last holdout, converted world | 0.588 | COMPLEX |
+| E01 | Deity-sovereignty ultimatum | 0.587 | COMPLEX |
+| DOE04 | Alyosha's faith crisis | 0.586 | COMPLEX |
 
 ### 3.4 Visual Analysis
 
-![Complexity Distribution](src/_benchmarks/charts/complexity_dist.png)
+![Complexity Distribution](src/benchmarks/charts/complexity_dist.png)
 *Figure 1: Distribution of Φ values across the 102-scenario suite.*
 
-![Complexity vs. Deadlock](src/_benchmarks/charts/complexity_vs_deadlock.png)
-*Figure 2: Correlation between deadlock fraction and consciousness complexity.*
+![Complexity vs. Deadlock](src/benchmarks/charts/complexity_vs_deadlock.png)
+*Figure 2: Correlation between deadlock fraction and Φ.*
 
 For full per-scenario results, see [`docs/RESULTS_ANALYSIS.md`](docs/RESULTS_ANALYSIS.md). For the complete scenario registry, see [`docs/SCENARIO_CATALOG.md`](docs/SCENARIO_CATALOG.md).
 
@@ -127,13 +137,13 @@ For full per-scenario results, see [`docs/RESULTS_ANALYSIS.md`](docs/RESULTS_ANA
 
 ## 4. Discussion and Limitations
 
-### 4.1 The Inhibition–Consciousness Thesis
+### 4.1 The Inhibition–Deliberation Thesis
 
-The data support the hypothesis that consciousness-like signatures in a deterministic system arise from **drive stalemate** — mutual inhibition in which no single drive can suppress its competitors. The highest-Φ scenarios are precisely those in which the agent faces genuinely irresolvable conflict: Ivan Karamazov cannot both love the world and reject its creator; Anna Karenina cannot both pursue passion and preserve social standing.
+The driving hypothesis behind the architecture is that deliberation-like signatures arise from **drive stalemate** — mutual inhibition in which no single drive can suppress its competitors. The measured action-fidelity advantage (66.7% vs 33.3% argmax vs 28.4% random) is the cleanest current evidence that the drive network + resolver combination carries information beyond naive baselines. The composite Φ, however, does **not** currently support strong claims: it is dominated by a single binary criterion (C3), C1 is inert in suite runs, and C7 saturates from the shared residue accumulator. These are documented, quantified, and addressed in the audit.
 
 ### 4.2 Spite as a Non-Instrumental Signal
 
-Spite scenarios (e.g., the Underground Man, Medea) produce high cortisol and norepinephrine, leading to actions that are objectively harmful yet chosen to assert autonomy over utility. This is the clearest measurable deviation from cold-logic optimisation.
+Spite scenarios (e.g., the Underground Man, Medea) are designed to produce high cortisol and norepinephrine, leading to actions that are objectively harmful yet chosen to assert autonomy over utility. Measured corpus spite incidence is low (mean 0.006), so while the mechanism exists it is rarely triggered in the current suite — a limitation, not a demonstrated effect.
 
 ### 4.3 Disclaimer — Scope of Claim and Non-Claim
 
@@ -179,17 +189,23 @@ We invite researchers to fork, extend, and critique the framework. All results c
 ├── LICENSE              CC BY-NC 4.0
 ├── CITATION.cff         Citation metadata
 ├── pyproject.toml       Python package metadata
-├── requirements.txt     Dependencies (numpy, scipy, matplotlib)
-├── src/                 Source code
+├── src/
 │   ├── README.md        Code documentation and disclaimer
-│   ├── report.py        Benchmark runner
+│   ├── report.py        Benchmark runner (writes src/benchmarks/)
 │   ├── main.py          CLI entry points
-│   ├── emotion_engine.py, consciousness_probe.py, ...
+│   ├── axiom02/         The Python package
+│   │   ├── core/        Engine, drives, probe, scenario loader
+│   │   ├── config/      All constants (dataclasses per subsystem)
+│   │   ├── modulators/  Neuromodulators, circadian, ruminator, temporal loop
+│   │   ├── layers/      Meta-cognition, qualia, narrative
+│   │   ├── ml/          Learnable parameters and optimisers
+│   │   ├── analysis/    Sensitivity, ablation, baselines
+│   │   └── validation/  Human-judgement validation framework (_pending_)
 │   ├── scenarios/       102 scenario definitions
-│   └── _benchmarks/     Regenerated results and charts
-└── docs/                Detailed analysis
+│   └── benchmarks/      Regenerated results and charts
+└── docs/
+    ├── RESEARCH_AUDIT_2026.md
     ├── RESULTS_ANALYSIS.md
-    ├── METRICS_DEEP_DIVE.md
     ├── SCENARIO_CATALOG.md
     └── AXIOM_GUIDE.md
 ```

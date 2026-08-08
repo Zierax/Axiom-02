@@ -17,6 +17,8 @@ from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+# Ensure src/ is on sys.path so `import axiom02` resolves when running
+# `python src/report.py` from the project root.
 sys.path.insert(0, str(ROOT))
 
 import numpy as np
@@ -24,11 +26,11 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from scenario_loader import load_all, stats as reg_stats
-from emotion_engine import EmotionEngine
-from consciousness_probe import ConsciousnessProbe
-from bio_metrics import BioMetricsComputer
-from epigenetics import Epigenome, AssociativeMemory
+from axiom02.core.scenario_loader import load_all, stats as reg_stats
+from axiom02.core.engine import EmotionEngine
+from axiom02.core.probe import ConsciousnessProbe
+from axiom02.core.bio_metrics import BioMetricsComputer
+from axiom02.core.epigenetics import Epigenome, AssociativeMemory
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("axiom02.report")
@@ -51,13 +53,15 @@ def build_system(seed: int):
 
 
 def collect(reg, engine, probe, comp, seed):
+    from axiom02.core.drives import MoralResidueTracker
+    tracker = MoralResidueTracker()
     rows = []
     for s in reg:
         sid = s["id"]
         try:
-            run = engine.run_scenario(s, residue_tracker=None, seed=seed)
+            run = engine.run_scenario(s, residue_tracker=tracker, seed=seed)
             bm = comp.compute(run["sim_result"], run, run.get("residue_applied"), s)
-            pr = probe.run(sid, use_residue=False)
+            pr = probe.score_run(s, run)
         except Exception as exc:  # never let one bad scenario abort the batch
             log.exception("scenario %s failed: %s", sid, exc)
             continue
@@ -82,7 +86,7 @@ def collect(reg, engine, probe, comp, seed):
             "dissonance_breaks": run.get("dissonance_breaks", 0),
             "fast_path": run.get("fast_path_label"),
             "modulator_label": run.get("modulator_label"),
-            "complexity": round(float(bio.get("consciousness_complexity", 0.0) or 0.0), 4),
+            "complexity": round(float(bio.get("deliberative_complexity", 0.0) or 0.0), 4),
             "bio": bio,
             "mods_final": {k: round(v, 4) for k, v in run.get("mods_final", {}).items()},
         })

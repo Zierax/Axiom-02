@@ -25,7 +25,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from drives import MicroEvent
+from axiom02.core.drives import MicroEvent
 
 CAT_TRAUMA = "post_trauma_contamination"
 

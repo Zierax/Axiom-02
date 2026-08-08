@@ -1,0 +1,6 @@
+include src/axiom02/py.typed
+recursive-include src/axiom02 *.py
+recursive-include src/scenarios *.py
+include src/requirements.txt
+include paper/*.tex paper/*.bib paper/*.pdf
+include tests/*.py

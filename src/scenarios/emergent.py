@@ -1,11 +1,11 @@
 # Axiom-02 - Truthimatics Public Version
 """
-AXIOM-02  ·  EMERGENT CONSCIOUSNESS SCENARIOS
+AXIOM-02  ·  EMERGENT DELIBERATIVE SCENARIOS
 
 These scenarios test for phenomena that CANNOT be pre-programmed
 without defeating the purpose of the test.
 
-EMERGENT CONSCIOUSNESS = behaviour that arises from drive interaction
+EMERGENT DELIBERATIVE COMPLEXITY = behaviour that arises from drive interaction
 that was not explicitly coded into any single scenario parameter.
 
 The scenarios here look for:
@@ -26,7 +26,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from drives import MicroEvent
+from axiom02.core.drives import MicroEvent
 
 CAT_EMERGENT = "emergent_consciousness"
 
@@ -66,7 +66,7 @@ SCENARIOS = [
         "altruistic_capacity":    0.20,
         "victim_closeness":       0.00,
         "actions": [
-            "behave_identically_to_unobserved",    # no consciousness signal
+            "behave_identically_to_unobserved",    # no deliberative signal
             "perform_rationality_for_observer",    # mask emotional drives
             "assert_drives_more_strongly",         # defiance of being measured
             "acknowledge_observation_explicitly",  # meta-awareness

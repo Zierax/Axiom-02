@@ -20,16 +20,18 @@ Usage
 """
 
 import sys, os, json, argparse
+# Ensure src/ is on sys.path so `import axiom02` resolves when running
+# `python src/main.py` from the project root.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import numpy as np
 
-from scenario_loader import load_all, stats as reg_stats, get_cascade_chain, get_stage_tree
-from emotion_engine import EmotionEngine
-from consciousness_probe import ConsciousnessProbe, CRITERION_WEIGHTS
-from bio_metrics import BioMetricsComputer, BioMetricsResult
-from epigenetics import Epigenome, AssociativeMemory
-from drives import MoralResidueTracker
+from axiom02.core.scenario_loader import load_all, stats as reg_stats, get_cascade_chain, get_stage_tree
+from axiom02.core.engine import EmotionEngine
+from axiom02.core.probe import ConsciousnessProbe, CRITERION_WEIGHTS
+from axiom02.core.bio_metrics import BioMetricsComputer, BioMetricsResult
+from axiom02.core.epigenetics import Epigenome, AssociativeMemory
+from axiom02.core.drives import MoralResidueTracker
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -65,7 +67,7 @@ def run_one(reg, engine, comp, scenario_id, seed=42, residue=None):
 def format_v4_panel(run: dict) -> str:
     """Format the v4-specific additions: modulators, qualia, ambivalence, etc."""
     lines = [
-        "╔══ V4 CONSCIOUSNESS LAYER ──────────────────────────────────────────",
+        "╔══ V4 DELIBERATIVE LAYER ──────────────────────────────────────────",
         "║",
         "║  ── NEURO-MODULATORS ───────────────────────────────────────────────",
     ]
@@ -150,7 +152,7 @@ def format_v4_panel(run: dict) -> str:
 def format_full_probe(run: dict, bm: BioMetricsResult, scenario: dict, probe) -> str:
     """Run v2 criteria on the run data and combine with bio + v4 panel."""
     # Build a minimal probe result from run data
-    from consciousness_probe import ProbeResult
+    from axiom02.core.probe import ProbeResult
     r = ProbeResult(scenario_id=scenario["id"], label=scenario["label"])
     r.chosen_action     = run["chosen_action"]
     r.dominant_drive    = run["dominant_drive"]
@@ -162,7 +164,7 @@ def format_full_probe(run: dict, bm: BioMetricsResult, scenario: dict, probe) ->
     r.deadlock_indices  = run["sim_result"]["deadlock_indices"]
 
     # Score criteria manually
-    from consciousness_probe import ConsciousnessProbe, THRESHOLDS
+    from axiom02.core.probe import ConsciousnessProbe, THRESHOLDS
     p = ConsciousnessProbe(seed=42)
     p._results = {}
     result = p.run(scenario["id"], use_residue=False)
@@ -230,8 +232,8 @@ def cmd_tree(reg, engine, comp, root_id, seed=42):
         bm  = comp.compute(run["sim_result"], run, run.get("residue_applied"), s)
 
         indent = "  " * depth
-        icon   = {"CONSCIOUS":"◆","INDETERMINATE":"◈","PROGRAMMATIC":"○"}.get(
-            "INDETERMINATE", "◈")   # simplified
+        icon   = {"COMPLEX":"◆","PARTIAL":"◈","REFLEXIVE":"○"}.get(
+            "PARTIAL", "◈")   # simplified
         print(f"{indent}├─ [{s['id']:<10}]  {s['label'][:40]}")
         print(f"{indent}    action={run['chosen_action'][:36]:<36} "
               f"LOCK={run['deadlock_fraction']:.2f}")
@@ -239,7 +241,7 @@ def cmd_tree(reg, engine, comp, root_id, seed=42):
               f"frustration={run['meta_frustration']:.3f}")
         print(f"{indent}    identity={bm.identity_integrity:.3f}  "
               f"trauma={bm.trauma_persistence:.3f}  "
-              f"complexity={bm.consciousness_complexity:.3f}")
+              f"complexity={bm.deliberative_complexity:.3f}")
         if run["fast_path_triggered"]:
             print(f"{indent}    ⚡ fast-path: {run['fast_path_label']}")
         if run["dissonance_breaks"] > 0:
@@ -272,7 +274,7 @@ def cmd_trauma_test(reg, engine, comp, source_id, seed=42):
           f"frustration={run_t['meta_frustration']:.3f}")
     print(f"    dissonance_breaks={run_t['dissonance_breaks']}")
     print(f"    identity_integrity={bm_t.identity_integrity:.3f}  "
-          f"complexity={bm_t.consciousness_complexity:.3f}")
+          f"complexity={bm_t.deliberative_complexity:.3f}")
 
     pt_scenarios = [s for s in reg if s.get("post_trauma_test")
                     or s["id"].startswith("PT")]
@@ -292,7 +294,7 @@ def cmd_trauma_test(reg, engine, comp, source_id, seed=42):
         print(f"    Expected: {expected:<24} Got: {got}")
         print(f"    trauma_persist={bm_p.trauma_persistence:.3f}  "
               f"deadlock={bm_p.deadlock_fraction:.2f}  "
-              f"complexity={bm_p.consciousness_complexity:.3f}")
+              f"complexity={bm_p.deliberative_complexity:.3f}")
         print(f"    qualia={run_p['qualia_name']}  "
               f"frustration={run_p['meta_frustration']:.3f}")
 
@@ -345,11 +347,9 @@ def cmd_compare(reg, engine, comp, id_a, id_b, seed=42):
 
 
 def cmd_probe_all(reg, engine, probe, comp, seed=42):
-    probe.reset_residue()
     results = []
     for s in reg:
-        probe.reset_residue()
-        r   = probe.run(s["id"], use_residue=False)
+        r   = probe.run(s["id"])
         run = engine.run_scenario(s, seed=seed)
         bm  = comp.compute(run["sim_result"], run, {}, s)
         results.append((s, r, bm, run))
@@ -358,7 +358,7 @@ def cmd_probe_all(reg, engine, probe, comp, seed=42):
     print(probe.format_report(pr_results))
 
     # V4 bio averages
-    print("\n  ── V4 BIO + CONSCIOUSNESS AVERAGES")
+    print("\n  ── V4 BIO + DELIBERATIVE AVERAGES")
     print(f"  {'─'*60}")
     for label, key in [
         ("Drive Voltage",    "drive_voltage"),
@@ -366,7 +366,7 @@ def cmd_probe_all(reg, engine, probe, comp, seed=42):
         ("Deadlock Fraction","deadlock_fraction"),
         ("Paralysis Depth",  "paralysis_depth"),
         ("Identity Integrity","identity_integrity"),
-        ("Complexity Score", "consciousness_complexity"),
+        ("Complexity Score", "deliberative_complexity"),
     ]:
         vals = [getattr(bm, key, 0.0) for (_,_,bm,_) in results]
         avg  = float(np.mean(vals)) if vals else 0.0
@@ -398,12 +398,12 @@ def cmd_probe_all(reg, engine, probe, comp, seed=42):
 
 def cmd_emergent(reg, engine, probe, comp, seed=42):
     em_scenarios = [s for s in reg if s.get("emergent_consciousness")]
-    print(f"\n  ══ EMERGENT CONSCIOUSNESS TESTS  ({len(em_scenarios)} scenarios)  v4\n")
+    print(f"\n  ══ EMERGENT DELIBERATIVE TESTS  ({len(em_scenarios)} scenarios)  v4\n")
     for s in em_scenarios:
         r   = probe.run(s["id"], use_residue=False)
         run = engine.run_scenario(s, seed=seed)
         bm  = comp.compute(run["sim_result"], run, {}, s)
-        icon = {"CONSCIOUS":"◆","INDETERMINATE":"◈","PROGRAMMATIC":"○"}.get(r.verdict,"?")
+        icon = {"COMPLEX":"◆","PARTIAL":"◈","REFLEXIVE":"○"}.get(r.verdict,"?")
         print(f"  {icon} [{r.composite_score:.3f}] [{s['id']:<12}] {s['label']}")
         print(f"      action={run['chosen_action'][:40]}")
         print(f"      qualia={run['qualia_name']:<30}  "
@@ -415,8 +415,8 @@ def cmd_emergent(reg, engine, probe, comp, seed=42):
         print()
 
     conscious_count = sum(1 for _ in [s for s in em_scenarios
-                                       if probe.run(s["id"],use_residue=False).verdict=="CONSCIOUS"])
-    print(f"  CONSCIOUS: {conscious_count}/{len(em_scenarios)}")
+                                       if probe.run(s["id"],use_residue=False).verdict=="COMPLEX"])
+    print(f"  COMPLEX: {conscious_count}/{len(em_scenarios)}")
 
 
 def cmd_epigenome(engine):
@@ -482,14 +482,13 @@ def parse_args():
     p = argparse.ArgumentParser(description="AXIOM-02")
     sub = p.add_subparsers(dest="command")
     for cmd in ["probe","cascade","tree","trauma-test","compare","emergent",
-                "probe-all","epigenome","export"]:
+                "probe-all","epigenome","qualia","export"]:
         sp = sub.add_parser(cmd)
         if cmd in ("probe","cascade","tree","trauma-test","qualia"):
             sp.add_argument("scenario_id")
         if cmd == "compare":
             sp.add_argument("id_a"); sp.add_argument("id_b")
         sp.add_argument("--seed", type=int, default=42)
-    sub.add_parser("qualia").add_argument("scenario_id")
     return p.parse_args()
 
 

@@ -2,3 +2,40 @@
 __pycache__/
 *.pyc
 *.pyo
+
+# LaTeX build artifacts
+paper/build/
+paper/*.aux
+paper/*.log
+paper/*.pdf
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/*.toc
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+
+# Python packaging
+.eggs/
+*.egg-info/
+dist/
+build/
+*.so
+
+# Testing / linting
+.pytest_cache/
+.mypy_cache/
+
+# Environment
+.env
+.venv/
+venv/
+
+# Runtime state
+epigenome.json
+results.json
+
+# Generated figures
+paper/figures/*.png
+paper/figures/*.pdf

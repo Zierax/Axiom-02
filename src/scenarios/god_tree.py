@@ -28,7 +28,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from drives import MicroEvent
+from axiom02.core.drives import MicroEvent
 
 CAT_BELIEF  = "belief_formation"
 CAT_STAGE   = "staged_belief_tree"
