@@ -2,6 +2,7 @@
 
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{microtype}
@@ -19,6 +20,9 @@
 \newcommand{\bI}{\mathbf{I}}
 \newcommand{\degp}[1]{\mathrm{#1}}
 \newcommand{\pct}{\%}
+\newcommand{\bslope}{\mathrm{slope}}
+
+\newtheorem{proposition}{Proposition}
 
 \begin{document}
 
@@ -50,8 +54,8 @@ composite $\DCI=\sum_{i=1}^{8} w_i C_i$.
 We report three families of results, each tied to released code and data
 ($n=102$ scenarios, seed $=42$). (i) \emph{Action fidelity, with an
 audit for label leakage}: the released engine matches the documented
-human-expected action in $66.7\pct$ of scenarios ($95\pct$ bootstrap CI
-$[57.5,75.8]$), versus $14.7\pct$ ($[7.8,21.6]$) for a cold-argmax
+human-expected action in $66.7\pct$ of scenarios ($95\pct$ Wald
+interval $[57.5,75.8]$), versus $14.7\pct$ ($[7.8,21.6]$) for a cold-argmax
 baseline and $28.4\pct$ ($[19.7,37.2]$) for uniform-random selection
 (chance $\approx24.7\pct$, the corpus mean of $1/m$). However, the
 released action resolver explicitly consults
@@ -63,9 +67,9 @@ complement $P(X\ge17)=0.98$). The reported $66.7\pct$ therefore
 measures the engine's documented-target biasing, not a blind, emergent
 fidelity property.
 (ii) \emph{Criterion diagnostics and verdict-flip ablation}: the
-composite is dominated by the single binary criterion $C3$ (Pearson
-$\rho=0.944$, $R^2=0.891$); $C1$ is identically zero on the suite and
-$C7$ saturates at $0.963$; zeroing $C3$, $C5$, $C7$ or $C2$ flips
+composite is dominated by the single binary criterion $C_3$ (Pearson
+$\rho=0.944$, $R^2=0.891$); $C_1$ is identically zero on the suite and
+$C_7$ saturates at $0.963$; zeroing $C_3$, $C_5$, $C_7$ or $C_2$ flips
 $72$, $63$, $56$ or $41$ of $102$ verdicts respectively (exact
 arithmetic; $45$ under stored-precision score---see
 Section~\ref{sec:results}).
@@ -73,7 +77,7 @@ Section~\ref{sec:results}).
 ranges from 53 to 71 of 102, and the verdicts agree with
 seed-42 in only $58.8$--$62.7\pct$ of scenarios; per-seed
 determinism is exact on fresh instances and shows $31/102$ drift on
-reuse (forward order) and $37/102$ on reversed order. The label-blind
+reuse (forward order) and $32/102$ on reversed order. The label-blind
 variant shifts the verdict distribution (REFLEXIVE $24$, PARTIAL $49$,
 COMPLEX $29$). We refrain from interpreting these labels as validated
 psychological measures and report the leakage findings explicitly; the
@@ -106,8 +110,10 @@ We build and evaluate such a model. AXIOM-02 maintains $n=18$ affective
 drives whose effective activations are computed by mutual inhibition.
 Because drives suppress each other, no single drive may ever dominate;
 when that happens the network is in \emph{deadlock}. The model is
-naturally read as a switched system \cite{liberzon2003,branicky1998,lin2009}: the affine layer is the drive network, and the switching
-signal selects, at each step, the firing or non-firing (deadlock) mode.
+naturally read as a switched system \cite{liberzon2003,branicky1998,lin2009}: the piecewise-affine drive layer (with the
+rectifier of \eqref{eq:effective}) is the continuous part, and the
+switching signal selects, at each step, the firing or non-firing
+(deadlock) mode.
 
 The contribution of this paper is \emph{not} a new control law. It is a
 rigorous, reproducible measurement study of a concrete deliberative
@@ -115,8 +121,11 @@ engine, with explicit reports of where the engine's self-reported
 composite behaves well and where it does not. Concretely:
 
 \begin{itemize}
-\item We formalise the network as a switched system and characterise the
-deadlock set (Section~\ref{sec:framework}).
+\item We formalise the network as a switched system, characterise the
+deadlock set as a union of a sublevel region and a near-tie band, and
+characterise modulator-escape inputs: $15$ of $18$ drives admit a
+bounded escape direction, three are provably trapped
+(Section~\ref{sec:framework}).
 \item We define an $8$-criterion observable and the composite $\DCI$
 (Section~\ref{sec:criterias}).
 \item We evaluate on 102 scenarios with (i) action-fidelity versus
@@ -160,14 +169,17 @@ Greene \cite{greene2001}, Haidt \cite{haidt2001}, Kohlberg
 \cite{kohlberg1981} and the trolley literature
 \cite{thomson1985,awad2018} study the \emph{outcome} of moral
 judgements. AXIOM-02 instead exposes the \emph{process}. The
-morality-as-process view is implicit in those data but rarely modelled
-include a runtime.
+morality-as-process view is implicit in those data but is rarely
+modelled in architectures with an explicit runtime at all.
 
 \subsection{Position relative to control theory}
 The contribution is at the boundary: we bring a concrete, deterministic
-engine under a switched-dynamics reading and subject it to honest
-experimental method. We do not yet provide Lyapunov-type certificates;
-this is explicitly deferred (Section~\ref{sec:discussion}).
+engine under a switched-dynamics reading, establish two structural
+facts about its deadlock set (decomposition and modulator-escape,
+Propositions~\ref{prop:decomp} and~\ref{prop:escape}), and subject the
+engine to honest experimental method. We do not yet provide
+Lyapunov-type certificates; this is explicitly deferred
+(Section~\ref{sec:discussion}).
 
 % ============================================================================
 \section{The AXIOM-02 Model}
@@ -175,9 +187,10 @@ this is explicitly deferred (Section~\ref{sec:discussion}).
 
 \subsection{State and drives}
 The model tracks the activation state of $n=18$ affective drives:
-greed, rage, fear, pride, shame, empathy, love, despair, resentment,
-acceptance, sacrifice, vengeance, cold logic, spite, self-preservation,
-guilt, hope, and realisation. Let $\bs\in\R_{\ge0}^{n}$ denote the
+grief, rage, fear, pride, shame, empathy, love, despair, resentment,
+acceptance, sacrifice\_drive, revenge\_drive, cold logic, spite,
+self-preservation, guilt, hope, and disgust (names per the released
+registry \texttt{drives.py}). Let $\bs\in\R_{\ge0}^{n}$ denote the
 activation state at a discrete step $t=1,\dots,T$ with $T=20$.
 
 \subsection{Effective activation and inhibition}
@@ -207,11 +220,14 @@ The \emph{deadlock set} is
 \DD=\Bigl\{\bs\in\R_{\ge0}^{n}:\; \nexists\, i,\; \mathrm{fires}(i,t)\Bigr\},
 \end{equation}
 the set of states from which no drive dominates behaviour at that step.
-With $\tau_f=0.42$ and $\tau_s=0.07$, $\DD$ is nonempty and reachable: if
-two strong drives mutually suppress each other into the $[0.42+\tau_s]$
-band, no drive fires for the step. Deadlock is the central behavioural
-signal in our framework and the switched-systems analogue of a blocked
-mode.
+With $\tau_f=0.42$ and $\tau_s=0.07$, $\DD$ is nonempty and reachable:
+by Proposition~\ref{prop:decomp} it is the union of the sublevel region
+$\DD_0=\{a_{(1)}^{\mathrm{eff}}\le\tau_f\}$ and the near-tie band
+$\DD_1=\{a_{(1)}^{\mathrm{eff}}>\tau_f,\ a_{(1)}^{\mathrm{eff}}-a_{(2)}^{\mathrm{eff}}\le\tau_s\}$;
+e.g.\ two strong drives mutually suppressing each other into the
+$[\tau_f,\ \tau_f+\tau_s]$ band with lead below $\tau_s$ puts the state
+into $\DD_1$. Deadlock is the central behavioural signal in our
+framework and the switched-systems analogue of a blocked mode.
 
 \subsection{Update dynamics and switching signal}
 At each step the activations are transformed by a deterministic
@@ -227,7 +243,7 @@ model is the switched map
 \label{eq:switched}
 \bs(t{+}1)=f_{\sigma(t)}(\bs(t)),\qquad
 \sigma(t)=\begin{cases}
-\mathrm{F}, & \mathrm{fires}(i,t)\ne\varnothing,\\
+\mathrm{F}, & \exists\, i:\ \mathrm{fires}(i,t),\\
 \mathrm{D}, & \bs(t)\in\DD,
 \end{cases}
 \end{equation}
@@ -239,11 +255,116 @@ are the two branches of the operator composition above, the branch being
 pinned by $\sigma(t)$. We do not claim switched-stability results for
 \eqref{eq:switched}; the formalisation provides the framework in which
 the deadlock-regime statistics of Section~\ref{sec:results} are
-meaningful. The inhibition kernel of \eqref{eq:effective} admits the
-Cohen--Grossberg class of competitive networks, for which absolute
-stability results exist \cite{cohengrossberg1983}; extending those
-results to \eqref{eq:switched} is future work
-(Section~\ref{sec:discussion}).
+meaningful. The inhibition kernel of \eqref{eq:effective} has the
+competitive-inhibition form studied in the Cohen--Grossberg class of
+networks \cite{cohengrossberg1983} (a discrete-time, rectified map,
+not the continuous Cohen--Grossberg ODE class; we invoke the reference
+only to position the inhibition kernel); absolute-stability results for
+that class do not transfer, and extending them to \eqref{eq:switched}
+is future work (Section~\ref{sec:discussion}).
+
+\subsection*{Two structural properties of the deadlock set}
+\addcontentsline{toc}{subsection}{Two structural properties of the deadlock set}
+We record two elementary facts used implicitly throughout
+(Section~\ref{sec:results}).
+
+\begin{proposition}[Decomposition of $\DD$]
+\label{prop:decomp}
+Let $a_{(1)}^{\mathrm{eff}}$ and $a_{(2)}^{\mathrm{eff}}$ be the two
+largest effective activations. With the firing rule
+\eqref{eq:fire},
+\[
+\DD
+=\underbrace{\Bigl\{\bs:\ a_{(1)}^{\mathrm{eff}}(\bs)\le\tau_f\Bigr\}}_{\DD_0}
+\ \cup\ \underbrace{\Bigl\{\bs:\ a_{(1)}^{\mathrm{eff}}(\bs)>\tau_f,\
+a_{(1)}^{\mathrm{eff}}(\bs)-a_{(2)}^{\mathrm{eff}}(\bs)\le\tau_s
+\Bigr\}}_{\DD_1}.
+\]
+\end{proposition}
+
+\begin{proof}
+Drive $i$ fires iff it is the unique top drive $a_{(1)}^{\mathrm{eff}}$
+and its activation clears both the threshold and the lead-margin
+inequalities of \eqref{eq:fire}. No drive fires iff $a_{(1)}^{\mathrm{eff}}\le\tau_f$
+(position one fails the threshold) or
+$a_{(1)}^{\mathrm{eff}}>\tau_f$ but the lead margin fails; these two
+alternatives are exactly $\DD_0$ and $\DD_1$. They are disjoint and
+together exhaust $\DD$.
+\end{proof}
+
+\begin{proposition}[Modulator escape directions]
+\label{prop:escape}
+Let $\Delta\in\R^{M\times n}$ be the released coupling matrix
+$(\Delta)_{m,i}=\delta_{m,i}$, and let
+$\bslope_i(w)\mathrel{\mathop:}=(\Delta^{\top}w)_i-\sum_{j\ne i}[\bI]_{ji}(\Delta^{\top}w)_j$
+be the per-step slope of the rectifier argument of drive $i$ in
+\eqref{eq:effective} under a constant deviation vector $w$. Define the
+\emph{escape rate}
+\[
+\rho_i\;\mathrel{\mathop:}=\;\max_{\|w\|_\infty\le 1}\;
+\min\Bigl\{\,\bslope_i(w),\;
+\min_{j\ne i}\bigl[\bslope_i(w)-\bslope_j(w)\bigr]\Bigr\},
+\]
+i.e.\ the largest $t$ such that a single bounded deviation moves drive
+$i$'s effective activation at slope $\ge t$ while its lead over every
+competitor grows at slope $\ge t$.
+\begin{enumerate}
+\item[(i)] If $\rho_i>0$, then for every state $\bs\in\R_{\ge0}^{n}$
+there exists a constant bounded modulator input $w$ ($\|w\|_\infty<\infty$;
+a witness vector attaining $\rho_i$) which, applied to \eqref{eq:mod}
+for finitely many steps, drives drive $i$ out of $\DD$:
+$a_i^{\mathrm{eff}}>\tau_f$ and
+$a_i^{\mathrm{eff}}-a_j^{\mathrm{eff}}>\tau_s$ for all $j\ne i$;
+thereafter the lead grows unboundedly under continued application in
+the \emph{ideal} model.
+\item[(ii)] For the released matrix and inhibition weights of
+Section~\ref{sec:framework}, $\rho_i>0$ for $15$ of the $18$
+drives, and $\rho_i=0$ for $\{$grief, guilt, shame$\}$:
+for these three, \emph{no} bounded single-modulator input can give
+their drive strict lead over every competitor in the ideal linear
+model (their every positive coupling is dominated by a competitor's).
+This is verified offline by solving the linear programme
+(\texttt{harness/escape\_lp.py} with scipy's routine, which for this
+small instance returns interior-optimal solutions within
+$10^{-6}$; Section~\ref{sec:repro}).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(i) The map \eqref{eq:mod} is linear in the deviations with coefficient
+matrix $\Delta^{\top}$, so a constant input $w$ accumulates exactly
+$k\,\sigma\,\Delta^{\top}w$ in the raw activations over $k$ steps.
+Because the inhibition term in \eqref{eq:effective} is built from raw
+activations, the rectifier argument of drive $i$ is linear from the
+first step:
+$u_i(k)=u_i(0)+k\,\sigma\,\bslope_i(w^{\star})$ with
+$\bslope_i(w^{\star})\ge\rho_i>0$; once $u_i$ turns positive (in finite
+time) $a_i^{\mathrm{eff}}=u_i\to\infty$ linearly, so
+$a_i^{\mathrm{eff}}>\tau_f$ after finitely many steps. Any rival
+$j\ne i$ has argument slope
+$\bslope_j(w^{\star})\le\bslope_i(w^{\star})-\rho_i$, so its effective
+activation either grows at most that fast or decays to the clamp, and
+in either case
+$a_i^{\mathrm{eff}}(k)-a_j^{\mathrm{eff}}(k)$ grows at least at slope
+$\rho_i>0$; hence the lead exceeds $\tau_s$ after finitely many steps
+and both firing inequalities of \eqref{eq:fire} hold. (ii) is a
+computed certificate: $\rho_i$ is the optimum of a linear programme in
+$(w,t)$; the released script solves it for each of the $18$ columns of
+$\Delta$ and prints the witness vectors (Section~\ref{sec:repro}).
+\end{proof}
+
+Two caveats keep the proposition honest. First, it is a statement about
+the \emph{ideal} model: the shipped engine clips activations to
+$[0,1]$ and interleaves decay, fatigue and attention operators, so the
+``unbounded lead'' clause does not transfer to the engine; what transfers
+is the \emph{qualitative} content: a bounded modulator input whose sign
+pattern matches a witness vector is an admissible push-out experiment.
+Second, the three trapped drives (grief, guilt, shame) are
+not claim-free---the negative result (ii) is itself structural:
+whatever modulator succeeds in raising them also raises a competitor at
+least as much, so in those three channels escape must be sought in the
+deadlock-regime decay branch $f_{\mathrm{D}}$ or in co-modulation, not
+in single-drive control.
 
 \subsection*{Neuromodulation}
 \addcontentsline{toc}{subsection}{Neuromodulation}
@@ -260,7 +381,7 @@ border between firing and deadlock.
 
 \subsection{Configuration and reproducibility}
 All thresholds, margins, inertia, and criterion weights are exposed in a
-configuration object (defaults $c=0.42$, $\tau_s=0.07$, $\sigma=0.60$).
+configuration object (defaults $\tau_f=0.42$, $\tau_s=0.07$, $\sigma=0.60$).
 A pickle-able epigenetic state persists across runs. Because the RNG is
 seeded per engine, identical seeds reproduce exact trajectories; shared
 instances additionally carry state (Section~\ref{sec:determinism}).
@@ -269,8 +390,11 @@ Every experimental claim is re-derivable from released artifacts:
 binomial tests and the verdict-flip ablation; \texttt{harness/robustness.py}
 reproduces the threshold grid, the seed ensemble, and the determinism
 checks; \texttt{harness/fidelity\_labelblind.py} reproduces the
-label-blind fidelity measurement. All statistics, wherever possible, are
-cross-checked against \texttt{benchmarks/results.json}.
+label-blind fidelity measurement; \texttt{harness/escape\_lp.py}
+verifies Proposition~\ref{prop:escape}(ii) by solving the escape-rate
+LP on the released coupling and inhibition matrices. All statistics,
+wherever possible, are cross-checked against
+\texttt{benchmarks/results.json}.
 
 % ============================================================================
 \section{Observables and Composite $\DCI$}
@@ -309,7 +433,8 @@ $0.28\le\DCI<0.50$; \emph{REFLEXIVE} if $\DCI<0.28$. These thresholds
 are standardised in the released harness and, as shown in
 Section~\ref{sec:results}, are the primary source of verdict fragility.
 Note that \texttt{results.json} also carries a
-\texttt{deliberative\_complexity} field computed by a separate
+\texttt{complexity} field (duplicated inside the \texttt{bio}
+sub-object as \texttt{deliberative\_complexity}), computed by a separate
 bio-metrics module; it is a different scalar from $\DCI$ and is not
 used in this paper.
 
@@ -318,9 +443,12 @@ used in this paper.
 \label{sec:methodology}
 
 \subsection{Scenario corpus}
-The 102 scenarios are drawn from 9 groups: original AXIOM scenarios,
-Dostoevsky, Tolstoy, Shakespeare, Camus, Orwell, McCarthy, Hugo, and
-Steinbeck. Each scenario specifies activation seeds, micro-event pools,
+The 102 scenarios are drawn from 17 registry categories, among them the
+original AXIOM scenarios, Dostoevsky, Tolstoy, Shakespeare, Camus,
+Orwell, McCarthy, Hugo, and Steinbeck, plus post-trauma contamination,
+emergent consciousness, staged belief trees, and belief formation.
+Each scenario
+specifies activation seeds, micro-event pools,
 a discrete action space, the cold (rational) baseline, the documented
 human-expected response, and a harm-to-self map for spite detection.
 
@@ -387,11 +515,19 @@ decision-making under author-annotated targets. To quantify the
 direction of the effect, we re-ran the identical 102-scenario protocol
 with a \emph{label-blind} resolver---the same drive plurality and action
 bias logic, but zero reads of \texttt{human\_expected}/\texttt{human\_alt}.
-Fidelity collapses to $16.7\pct$ (17/102, CI $[9.4,23.9]$).
+Fidelity collapses to $16.7\pct$ (17/102, Wald CI $[9.4,23.9]$;
+all intervals in this paper are normal-approximation intervals).
 A one-sided binomial test against $p_0=E[1/m]=0.2466$ gives
 $P(X\le17)=0.035$, i.e.\ the label-blind system is \emph{below} chance
 rather than merely at chance (the upper-tail complement
-$P(X\ge17)=0.98$). The negative bias is consistent with the
+$P(X\ge17)=0.98$). Two disclosures: $p_0$ is a point estimate of the
+corpus choice mean (the test treats it as known; the Monte-Carlo error
+of the estimate is small relative to the observed gap $17$ vs.\
+$25.2$); and the ``below chance'' direction is a deliberate-system
+signal---cold-argmax ($14.7\pct$) and uniform random ($28.4\pct$) sit
+on \emph{opposite} sides of chance, so the test is one-sided by the
+reading of the direction, not by keeping an unfavourable outcome in
+the tail. The negative bias is consistent with the
 defiant/withdrawal branches, which deliberately avoid the cold option.
 Table~\ref{tab:fidelity} reports both rows; Fig.~\ref{fig:fid}
 shows the contrast. For symmetry we note the uniform-random row is
@@ -402,7 +538,7 @@ only strategy that beats chance is the label-aware one.
 \centering
 \caption{Action fidelity, seed = 42, $n=102$.}
 \label{tab:fidelity}
-\begin{tabular}{lccl}
+\begin{tabular}{lcc}
 \toprule
 Strategy & Fidelity (\%) & 95\% CI \\
 \midrule
@@ -419,7 +555,8 @@ Chance ($E[1/m]$) & 24.7 & --- \\
 \centering
 \includegraphics[width=\columnwidth]{figures/fig_fid.png}
 \caption{Action fidelity (seed 42). The released resolve reads the
-documented label; a label-blind variant falls to chance level.}
+documented label; a label-blind variant falls to $16.7\pct$, below
+chance ($P(X\le 17)=0.035$ under $E[1/m]$).}
 \label{fig:fid}
 \end{figure}
 
@@ -526,6 +663,9 @@ $C_1$ & 0.02 & $-0.000$ \\
 $C_8$ & 0.02 & $-0.000$ \\
 \bottomrule
 \end{tabular}
+\\[2pt]
+\footnotesize$\Delta\DCI_k=-w_k\bar{C}_k$ on exact means (e.g.\
+$C_5$: $-0.20\times0.5275=-0.1055$); rounded to 3 decimals.
 \end{table}
 
 \subsection{Threshold sensitivity}
@@ -534,7 +674,7 @@ $\tau_s\in\{0.03,0.07,0.12\}$ (seed = 42). The number of COMPLEX
 verdicts ranges from 16 to 61 depending on thresholds; it is monotone in
 $\tau_s$ but not in $\tau_f$: COMPLEX blows up when the deadlock band
 widens. This confirms that verdict labels \emph{are}
-threshold-relative. Table~\ref{tab:grid}.
+threshold-relative (Table~\ref{tab:grid}).
 
 \begin{table}[h]
 \centering
@@ -576,13 +716,16 @@ Agreement w/ 42 & --- & 61.8 & 62.7 & 60.8 & 58.8 \\
 
 \subsection{Determinism vs statefulness}
 \label{sec:determinism}
-On fresh instances (new engine, new tracker, seed 42) all 102 scenarios
-reproduce exactly (0/102 action drift, reproduced by
+On fresh instances (new engine, new tracker) all 102 scenarios
+reproduce exactly at every ensemble seed (0/102 action drift at each of
+the five seeds $\{42,137,256,1024,9999\}$,
 \texttt{harness/robustness.py}). Under reuse (the same engine and
 residual tracker keep state from the previously run suite), re-running
 the same corpus in forward order yields 31/102 scenarios with a
 different action; running the corpus in \emph{reversed} order yields
-37/102. (These numbers are action-level; criterion-level stability on
+32/102 (measured against an independent, identical canonical pass of
+the corpus, in the released harness). (These numbers are action-level;
+criterion-level stability on
 reuse is uncharacterised, and given the verdict-flip sensitivity of
 Section~\ref{sec:results}, verdict-level stability on reuse could be
 weaker still.) The statefulness is therefore order-dependent. Determinism is
@@ -633,7 +776,8 @@ sensitive.}
 Our original hypothesis was that mutual inhibition--not additive
 activation--produces the appearance of deliberation. The leakage audit
 above substantially weakens the supporting evidence: once the resolver
-no longer reads the documented target, fidelity falls to chance, so the
+no longer reads the documented target, fidelity falls to $16.7\pct$,
+below chance ($P(X\le17)=0.035$), so the
 $66.7\pct$ cannot be attributed to the inhibition dynamics. What the
 label-blind run \emph{did} retain is the architecture's deadlock and
 oscillation behaviour; the modest positive association
@@ -664,18 +808,32 @@ with the labels removed from every component that could read them, and
 the fidelity should be reported against the corpus chance level
 $E[1/m]$, not against a single crude distribution. Applied here it
 separates the claim into a label-aware component (66.7\pct) and a pure
-dynamics component (16.7\pct, at chance), which is the scientific
+dynamics component (16.7\pct, below chance), which is the scientific
 content of the fidelity result.
 
 \subsection{Design lessons for control}
 The experiment illustrates the value of \emph{regime-aware}
 metrics: a switched reading exposes the deadlock-regime as the actual
 deliberative carrier, whereas additive reward models cannot have a dead
-set. Future control-relevant work: certify invariance of $\DD$ (via the
-standard Lyapunov machinery for switched systems
+set. The structural facts established in Section~\ref{sec:framework}
+make this concrete: by Proposition~\ref{prop:decomp}, the deadlock set
+is a union of a sublevel region and a near-tie band, so
+\emph{deadlock is a set property of the drive state}, not a label the
+engine has to learn; and by Proposition~\ref{prop:escape}, escape
+directions exist for $15$ of $18$ drives---a bounded modulator input
+is a valid push-out experiment---while the three trapped drives
+(grief, guilt, shame) expose channels where single-drive
+modulator control provably cannot establish dominance, and where
+escape must come from the deadlock-regime decay branch or from
+co-modulation. Pushing the network out of $\DD$ is therefore a
+\emph{partially} constructive problem: synthesizable for most drives,
+provably infeasible for single-input control of the rest. Future
+control-relevant work: certify invariance of $\DD$ (via the standard
+Lyapunov machinery for switched systems
 \cite{liberzon2003,khalil2002,johansson1998,branicky1998,goebel2012}) and
-insert controls (e.g., modulator gains) that push the network out of
-$\DD$; then the $\tau$-grid maps become artificial-control experiments.
+insert constructive controls (modulator gains as in
+Proposition~\ref{prop:escape}) that push the network out of $\DD$;
+then the $\tau$-grid maps become artificial-control experiments.
 
 \subsection{Limitations}
 (1) The scenario corpus is Western, literary, and curated; generalisation
@@ -683,9 +841,14 @@ is limited. (2) The $C_7$ residue and $C_1$ status criteria are
 structurally degenerate on this suite; per-scenario attribution would
 change them. (3) Criterion weights are heuristic; (4) the fidelity
 baseline assumes uniform action selection (empirically $28.4\pct$
-random); (5) bootstrap CIs are not multiplicity-corrected; (6) the
-deadlock set \eqref{eq:deadlock} has not been characterised
-geometrically---we only count visits; (7) the most consequential
+random); (5) all $95\pct$ intervals are Wald (normal-approximation)
+intervals, none of the one-sided comparisons reported above
+(fidelity rows, binomial tails, criterion correlations,
+verdict-flip counts) is multiplicity-corrected; (6) the
+\emph{geometric} characterisation of $\DD$ (beyond the
+decomposition of Proposition~\ref{prop:decomp} and the escape input of
+Proposition~\ref{prop:escape}) is open---we count visits rather than
+characterise the attractor structure; (7) the most consequential
 limitation is the label-aware resolver, which we disclose and measure
 rather than hide.
 
@@ -699,13 +862,13 @@ and evaluated it against 102 scenarios with a clearly stated protocol
 seed $=42$ and all claims supported by reproducible code. The released
 engine matches the documented human-expected action in $66.7\pct$ of
 scenarios---but an audit shows the action resolver reads the documented
-target: a label-blind re-run falls to $16.7\pct$, at chance. We conclude
+target: a label-blind re-run falls to $16.7\pct$, below chance. We conclude
 that the $66.7\pct$ is attributable to the label-aware resolver, not to
 emergent fidelity of the inhibition dynamics. The composite is
 dominated by one criterion ($\rho=0.944$); thresholds and seeds are
 fragile (16--61 COMPLEX across the grid; 53--71 across seeds); verdicts
 are label-sensitive (blind COMPLEX $29$ vs.\ $53$); determinism is exact
-per seed with $31/102$ (forward) and $37/102$ (reversed) reuse drift.
+per seed with $31/102$ (forward) and $32/102$ (reversed) reuse drift.
 The model is offered as a controlled, switched-system take on the
 \emph{process} of conflicted decision-making and as a worked example of
 gold-label leakage in affective decision-making evaluation; its outputs

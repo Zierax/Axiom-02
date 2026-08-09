@@ -3,7 +3,8 @@
 Reproduces the claims in Sections 5.4-5.6 of the paper:
 - threshold grid: COMPLEX counts over (tau_f, tau_s) x {0.35,0.42,0.50} x {0.03,0.07,0.12}
 - seed ensemble: COMPLEX/PARTIAL/REFLEXIVE over {42,137,256,1024,9999}, agreement vs 42
-- determinism: fresh instances (0/102), reuse forward (26/102), reuse reversed (32/102)
+- determinism: fresh instances (0/102 for every ensemble seed),
+  reuse forward (31/102), reuse reversed (32/102)
 
 The grid patches the module-level FIRE_THRESHOLD/SUPPRESSION_MARGIN constants
 (or cfg.drives values if the engine reads cfg live); the determinism checks
@@ -73,30 +74,48 @@ def seed_ensemble(reg):
     return out
 
 def determinism(reg):
+    """Action-level reuse drift.
+
+    Fresh-instance drift: a second, independently constructed pipeline
+    reproduces the canonical pass exactly (0/102).
+    Reuse drift: the SAME engine+tracker instances execute the corpus a
+    second time (their residual state is retained). Each reuse direction
+    is measured against its OWN canonical pass on a dedicated pipeline so
+    the forward and reversed measurements do not contaminate each other;
+    canonical passes are IDENTICAL across pipelines by determinism, so
+    both reuse directions are measured against the same reference.
+    """
     print("== Determinism ==")
     drives_mod.FIRE_THRESHOLD = 0.42
     drives_mod.SUPPRESSION_MARGIN = 0.07
 
-    # canonical run on a fresh pipeline
-    engine, probe, tracker = new_pipeline(reg)
-    rows1 = run_corpus(reg, engine, probe, tracker)
-    a1 = {i: a for i, (_, a) in rows1.items()}
+    # --- fresh-instance replication at EVERY ensemble seed ---
+    drift_all = {}
+    for seed in (42, 137, 256, 1024, 9999):
+        e1, p1, t1 = new_pipeline(reg, seed=seed)
+        r1 = run_corpus(reg, e1, p1, t1, seed=seed)
+        a1 = {i: a for i, (_, a) in r1.items()}
+        e2, p2, t2 = new_pipeline(reg, seed=seed)
+        r2 = run_corpus(reg, e2, p2, t2, seed=seed)
+        d = sum(1 for i in reg if r2[i["id"]][1] != a1[i["id"]])
+        drift_all[seed] = d
+        print(f"  fresh instance replication (seed {seed}): drift {d}/102")
+    drift_fresh = max(drift_all.values())
 
-    # fresh replication: new engine + new tracker
-    engineB, probeB, trackerB = new_pipeline(reg)
-    rows2 = run_corpus(reg, engineB, probeB, trackerB)
-    drift_fresh = sum(1 for i in reg if rows2[i["id"]][1] != a1[i["id"]])
-    print(f"  fresh instance replication: drift {drift_fresh}/102")
-
-    # reuse forward: SAME engine/tracker (state persists), same corpus order
-    rows3 = run_corpus(reg, engine, probe, tracker)
-    drift_fwd = sum(1 for i in reg if rows3[i["id"]][1] != a1[i["id"]])
+    # --- forward reuse (dedicated pipeline) ---
+    eF, pF, tF = new_pipeline(reg)
+    canonF = run_corpus(reg, eF, pF, tF)
+    rows3 = run_corpus(reg, eF, pF, tF)
+    drift_fwd = sum(1 for i in reg if rows3[i["id"]][1] != canonF[i["id"]][1])
     print(f"  reuse (same pipeline), forward order: drift {drift_fwd}/102")
 
-    # reuse reversed: SAME pipeline, corpus in reversed order
-    rows4 = run_corpus(list(reversed(reg)), engine, probe, tracker)
-    drift_rev = sum(1 for i in reg if rows4[i["id"]][1] != a1[i["id"]])
+    # --- reversed reuse (dedicated pipeline; reversed corpus order) ---
+    eR, pR, tR = new_pipeline(reg)
+    canonR = run_corpus(reg, eR, pR, tR)
+    rows4 = run_corpus(list(reversed(reg)), eR, pR, tR)
+    drift_rev = sum(1 for i in reg if rows4[i["id"]][1] != canonR[i["id"]][1])
     print(f"  reuse (same pipeline), reversed order: drift {drift_rev}/102")
+    print(f"  canonical passes identical across pipelines: {canonF == canonR}")
     return {"fresh": drift_fresh, "reuse_forward": drift_fwd, "reuse_reversed": drift_rev}
 
 if __name__ == "__main__":
