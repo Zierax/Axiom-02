@@ -6,26 +6,25 @@
 \usepackage{graphicx}
 \usepackage{microtype}
 \usepackage{xcolor}
-\usepackage{tikz}
-\usepackage{pgfplots}
-\pgfplotsset{compat=1.18}
-\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black]{hyperref}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
 
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\N}{\mathbb{N}}
-\newcommand{\EE}{\mathcal{E}}
 \newcommand{\DD}{\mathcal{D}}
-\newcommand{\MM}{\mathcal{M}}
-\newcommand{\CC}{\mathcal{C}}
 \newcommand{\DCI}{\mathrm{DCI}}
-\newcommand{\bx}{\mathbf{x}}
-\newcommand{\bw}{\mathbf{w}}
 \newcommand{\bs}{\mathbf{s}}
+\newcommand{\bw}{\mathbf{w}}
 \newcommand{\bI}{\mathbf{I}}
+\newcommand{\degp}[1]{\mathrm{#1}}
+\newcommand{\pct}{\%}
 
 \begin{document}
 
-\title{Behavioral Signatures of Deliberation:\\A Deterministic Dynamical Model of Drive-Conflict Resolution}
+\title{Behavioral Signatures of Deliberation in a Deterministic Mutually
+Inhibited Drive Network\\ A Switched-Systems Perspective on Moral
+Decision-Making}
 
 \author{Zierax%
 \thanks{Manuscript submitted to \emph{IEEE Transactions on Automatic Control}.}}
@@ -35,646 +34,693 @@
 \maketitle
 
 \begin{abstract}
-We present AXIOM-02, a deterministic dynamical model of deliberative
-decision-making under moral conflict, cast as a mutual-inhibition network of
-$n = 18$ affective drives coupled to $5$ neuromodulatory systems. The network
-is a switched affine system whose firing condition
-$\mathrm{fires}(i) \iff a_i^{\mathrm{eff}} > \tau_f \wedge (a_i^{\mathrm{eff}} -
-a_{(2)}^{\mathrm{eff}}) > \tau_s$ gives rise to a reachability-relevant
-singularity---the \emph{deadlock} state in which no drive dominates---and to
-measurable trajectories (oscillation, spite, moral residue) that standard
-reward-maximising agents cannot produce. We define a weighted composite
-$\DCI = \sum_{i=1}^{8} w_i C_i$ over eight behavioural criteria and evaluate
-the system on 102 high-stakes literary scenarios. The engine's chosen action
-matches the documented human-expected action in $66.7\%$ of scenarios versus
-$33.3\%$ for argmax and $28.4\%$ for random selection (chance $\approx
-24\%$). Ablation shows the composite is dominated by the single binary
-criterion C3 ($\rho = 0.944$, $R^2 = 0.891$); we therefore report $\DCI$ as a
-diagnostic rather than a validated complexity measure. Verdicts are
-seed-dependent (53--71 COMPLEX across seeds) despite per-seed determinism.
-The contribution is a reproducible control-theoretic framing of conflicted
-decision processes, not a claim about consciousness.
+We present AXIOM-02, a deterministic, mutually inhibited drive network that
+models deliberative decision-making under moral conflict, and study it as
+a switched dynamical system. At each of $T=20$ steps the network of
+$n=18$ affective drives is in one of two regimes: a \emph{firing} regime,
+in which a dominant drive clears the threshold $\tau_f$ and lead margin
+$\tau_s$, and a \emph{deadlock} regime, in which no drive does so. The
+deadlock set---the singularity at which behaviour is not decided by a
+single drive---gives rise to measurable deliberative signatures:
+hesitation, oscillation, spite-driven away-from-optimum choices, and
+moral-residue contamination across scenarios. From each trajectory we
+compute eight behavioural criteria $C_1,\ldots,C_8$ and a weighted
+composite $\DCI=\sum_{i=1}^{8} w_i C_i$.
+
+We report three families of results, each tied to released code and data
+($n=102$ scenarios, seed $=42$). (i) \emph{Action fidelity, with an
+audit for label leakage}: the released engine matches the documented
+human-expected action in $66.7\pct$ of scenarios ($95\pct$ bootstrap CI
+$[57.5,75.8]$), versus $14.7\pct$ ($[7.8,21.6]$) for a cold-argmax
+baseline and $28.4\pct$ ($[19.7,37.2]$) for uniform-random selection
+(chance $\approx24.7\pct$, the corpus mean of $1/m$). However, the
+released action resolver explicitly consults
+\texttt{scenario["human\_expected"]} during decision-making; re-running
+the corpus with a \emph{label-blind} resolver---identical in every other
+respect---collapses fidelity to $16.7\pct$ ($[9.4,23.9]$), below chance
+($P(X\le17\mid p{=}0.2466)=0.035$ one-sided; the upper-tail
+complement $P(X\ge17)=0.98$). The reported $66.7\pct$ therefore
+measures the engine's documented-target biasing, not a blind, emergent
+fidelity property.
+(ii) \emph{Criterion diagnostics and verdict-flip ablation}: the
+composite is dominated by the single binary criterion $C3$ (Pearson
+$\rho=0.944$, $R^2=0.891$); $C1$ is identically zero on the suite and
+$C7$ saturates at $0.963$; zeroing $C3$, $C5$, $C7$ or $C2$ flips
+$72$, $63$, $56$ or $41$ of $102$ verdicts respectively (exact
+arithmetic; $45$ under stored-precision score---see
+Section~\ref{sec:results}).
+(iii) \emph{Robustness}: across a five-seed ensemble the COMPLEX count
+ranges from 53 to 71 of 102, and the verdicts agree with
+seed-42 in only $58.8$--$62.7\pct$ of scenarios; per-seed
+determinism is exact on fresh instances and shows $31/102$ drift on
+reuse (forward order) and $37/102$ on reversed order. The label-blind
+variant shifts the verdict distribution (REFLEXIVE $24$, PARTIAL $49$,
+COMPLEX $29$). We refrain from interpreting these labels as validated
+psychological measures and report the leakage findings explicitly; the
+paper's contribution is a reproducible, control-oriented framework,
+an honest reliability characterisation, and a worked example of a
+pervasive evaluation pitfall (gold-label leakage) in affective
+decision-making systems.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Cognitive model, emotion dynamics, mutual inhibition, switched dynamical
-systems, deadlock, moral decision-making, deliberative complexity,
-determinism, simulation.
+Cognitive architecture, switched dynamical systems, mutual inhibition,
+action selection, deadlock, moral dilemma, determinism, reproducibility.
 \end{IEEEkeywords}
 
 % ============================================================================
 \section{Introduction}
 \label{sec:introduction}
 
-The measurement of deliberation in computational systems remains an open
-problem in cognitive science. Classical decision-theoretic agents resolve
-conflicts by maximising expected utility, producing choices that are
-deterministic given complete information---yet human deliberation is
-characterised precisely by its resistance to such resolution. When faced
-with moral dilemmas, humans exhibit prolonged indecision, oscillation
-between competing values, and---critically---occasionally choose options
-that are demonstrably worse for themselves \cite{dostoevsky1864}.
+Decision-making under conflict is the rule, not the exception, for agents
+that must act while holding incompatible motivations. Classical decision
+theory collapses such conflict by postulating a single scalar objective;
+behavioural data, however, show that real agents hesitate, oscillate
+between competing drives, and occasionally select options that are worse
+for themselves~\cite{dostoevsky1864,tversky1974,loewenstein1996}. These
+phenomena are \emph{behavioural signatures} of an unresolved internal
+process, and they require a model whose \emph{transient} is visible---not
+just whose output is a policy.
 
-This paper addresses the question: \emph{Can a deterministic dynamical
-system produce behavioural signatures that relate to human intuitions
-about deliberative depth?} We approach this not through neural simulation
-but through a carefully engineered drive-conflict architecture that
-replicates the phenomenology of moral struggle.
+We build and evaluate such a model. AXIOM-02 maintains $n=18$ affective
+drives whose effective activations are computed by mutual inhibition.
+Because drives suppress each other, no single drive may ever dominate;
+when that happens the network is in \emph{deadlock}. The model is
+naturally read as a switched system \cite{liberzon2003,branicky1998,lin2009}: the affine layer is the drive network, and the switching
+signal selects, at each step, the firing or non-firing (deadlock) mode.
 
-The contribution is threefold. First, we formalise the model as a
-mutual-inhibition network in which drives suppress each other
-asymmetrically, producing effective activations that differ
-qualitatively from raw activations; the deadlock set is characterized as
-the region of state space in which no drive satisfies the firing
-condition (Section~\ref{sec:framework}). Second, we define eight
-measurable deliberative criteria---from deadlock frequency to
-moral-residue bleed---and combine them into a composite $\DCI$
-(Section~\ref{sec:probe}). Third, we evaluate the system against 102
-scenarios drawn from canonical literature, reporting measured action
-fidelity and an honest characterisation of $\DCI$'s limitations
-(Section~\ref{sec:experiments}).
+The contribution of this paper is \emph{not} a new control law. It is a
+rigorous, reproducible measurement study of a concrete deliberative
+engine, with explicit reports of where the engine's self-reported
+composite behaves well and where it does not. Concretely:
+
+\begin{itemize}
+\item We formalise the network as a switched system and characterise the
+deadlock set (Section~\ref{sec:framework}).
+\item We define an $8$-criterion observable and the composite $\DCI$
+(Section~\ref{sec:criterias}).
+\item We evaluate on 102 scenarios with (i) action-fidelity versus
+baselines, (ii) per-criterion diagnostics, (iii) a leave-one-out
+ablation, (iv) a threshold sensitivity grid, and (v) a five-seed
+ensemble (Section~\ref{sec:results}).
+\item We report limitations honestly and argue that $\DCI$ should be
+treated as a diagnostic, not as a validated measure of ``deliberative
+complexity'' (Section~\ref{sec:discussion}).
+\end{itemize}
+
+\paragraph{Disclaimer.}
+No claim of consciousness, human alignment, or psychological validity is
+made. The labels COMPLEX/PARTIAL/REFLEXIVE refer to the statistics of the
+model's own trajectory.
 
 % ============================================================================
 \section{Related Work}
 \label{sec:related}
 
-\subsection{Computational Models of Emotion}
+\subsection{Cognitive and Emotion Architectures}
+The OCC model \cite{ortony1988,gratch2014} renders a single discrete
+emotion per appraisal; BDI \cite{bratman1987,rao1995} treats conflict as
+a planning problem and avoids deliberation by design; EMA \cite{marsella2009} adds appraisal dynamics to BDI. These systems do not expose an
+internal conflict state that can \emph{deadlock}. Recent affective
+architectures \cite{picard1997,russell1980,sloman2009,rolls2013,ledoux1996,panskepp2004,minsky2006} emphasise appraisal and discrete
+labels; only a few treat drive-level competition as a dynamical system.
 
-The \emph{Ortony--Clore--Collins} (OCC) model \cite{ortony1988} remains
-the most influential cognitive appraisal theory, structuring emotions as
-consequences of evaluations along three dimensions: valence of outcome,
-agency, and circumstances. Each of the 22 emotion types is derived from a
-binary decision tree, making OCC fully computable \cite{gratch2014}. OCC
-generates \emph{discrete emotion labels} from appraisal variables---a
-single evaluation pathway yields a single, unambiguous emotion type.
-AXIOM-02 departs fundamentally: its 18 drives are not discrete emotion
-labels but \emph{motivational states} with continuous activation and
-mutual inhibition. Crucially, the inter-drive suppression produces
-emergent deliberative signatures---deadlock oscillation, spite-driven
-rejection of rational optima, and moral residue bleed across sequential
-dilemmas---that OCC's tree structure cannot generate, because each
-appraisal yields a single outcome with no mechanism for sustained
-inter-drive competition.
+\subsection{Competitive and switched dynamics}
+Winner-take-all and lateral-inhibition networks
+\cite{grossberg1976,grossberg1973,amari1977,hopfield1982,cohengrossberg1983,hahnloser2000,yuille2003,redgrave1999} produce exactly the competition we need, and they are
+classical study objects in control. Switched and hybrid systems
+\cite{branicky1998,hespanha2004,shorten2007,lin2009,vanderschaft2000,goebel2012,hespanhamorse1999,liberzonmorse1999,sunge2011,branicky2000proc} provide
+the right language: our firing condition is a spatial threshold logic
+reminiscent of \cite{mcculloch1943}, and deadlock is the system analogue
+of resource deadlock \cite{coffman1971} and of nonlive marked graphs in
+the supervisory-control sense \cite{ramadgewonham1987}.
 
-BDI (Belief--Desire--Intention) architectures \cite{bratman1987,
-rao1995} model agents as rational deliberators that maintain explicit
-beliefs, desires that motivate action, and intentions that commit
-resources to plans. BDI systems are well-suited to goal-directed
-behaviour but treat conflict resolution as a planning problem---agents
-select intentions via pragmatic reasoning rather than emotional
-competition. AXIOM-02 has no explicit beliefs or goals; drives compete
-directly through mutual inhibition, producing deliberative signatures
-without propositional representation. The deadlock state---in which no
-single drive dominates---is a state that BDI architectures explicitly
-avoid by design. Marsella and Gratch's EMA model \cite{marsella2009}
-extended BDI with appraisal dynamics, demonstrating that emotions emerge
-from agent--environment interaction loops. While EMA captures appraisal
-\emph{processes}, AXIOM-02 focuses on the \emph{behavioural signatures}
-of post-appraisal drive conflict: what happens when multiple appraisals
-are simultaneously valid and mutually contradictory.
+\subsection{Moral psychology and AI}
+Greene \cite{greene2001}, Haidt \cite{haidt2001}, Kohlberg
+\cite{kohlberg1981} and the trolley literature
+\cite{thomson1985,awad2018} study the \emph{outcome} of moral
+judgements. AXIOM-02 instead exposes the \emph{process}. The
+morality-as-process view is implicit in those data but rarely modelled
+include a runtime.
 
-\subsection{Consciousness Measures}
-
-Integrated Information Theory \cite{tononi2004} proposes that
-consciousness corresponds to a system's capacity to integrate
-information, quantified by $\Phi$. AXIOM-02's $\DCI$ is explicitly
-\emph{not} IIT's $\Phi$---this distinction is critical. Where $\Phi$
-measures integration across \emph{all} system states (capturing the
-\emph{capacity} for experience), $\DCI$ measures specific behavioural
-correlates of deliberative struggle (capturing the \emph{behavioural
-signature} of conflicted agency). A system may have high $\Phi$ yet
-produce no deadlock (if drives are additive rather than inhibitory), or
-high $\DCI$ with modest $\Phi$ (if inhibition is concentrated among a few
-drives). The two metrics are complementary rather than competing:
-$\Phi$ addresses the hard problem of phenomenal experience, while $\DCI$
-operationalises the softer but more empirically tractable question of
-deliberative depth.
-
-Global Workspace Theory \cite{baars1988} models consciousness as a
-broadcast mechanism whereby information selected by a limited-capacity
-workspace is made available to specialist processors. In GWT, the
-workspace functions as a bottleneck: only one coalition of
-representations gains access at a time, and competition among coalitions
-determines which representation is broadcast. AXIOM-02's deadlock
-mechanism resembles GWT competition, but operates on \emph{affective
-drives} rather than cognitive representations. When no coalition of
-drives satisfies both the fire threshold $\tau_f$ and the margin
-$\tau_s$, the workspace effectively broadcasts \emph{nothing}, producing
-the system-level hesitation that correlates with deliberative depth.
-
-Higher-Order Theories of consciousness \cite{rosenthal2005} propose
-that a mental state is conscious only when it is the object of a
-higher-order representation. AXIOM-02's meta-cognitive monitor
-implements a \emph{structural analog} of this mechanism: it detects and
-reports deadlock by monitoring the drive activation landscape.
-Nevertheless, AXIOM-02 does not attribute phenomenal consciousness to
-the system; the meta-cognitive layer is a diagnostic mechanism, not a
-claim about subjective experience.
-
-\subsection{Moral Reasoning in AI}
-
-The Moral Machine experiment \cite{awad2018} collected 40 million
-ethical decisions from participants across 233 countries, revealing
-systematic cultural variation in trolley-type judgements. While that
-paradigm elicits \emph{individual} moral preferences, AXIOM-02 models
-the \emph{internal conflict} that produces those preferences: in Awad et
-al.'s paradigm the agent chooses; in AXIOM-02's paradigm the agent's
-internal state \emph{oscillates} before choosing. The moral-residue
-bleed mechanism (C7) extends this further: prior moral choices
-contaminate future deliberation, producing path-dependent trace dynamics
-that cross-sectional moral-judgement studies cannot capture.
-
-The trolley problem \cite{thomson1985} has become the canonical stimulus
-for studying moral judgement. Greene et al.'s fMRI studies
-\cite{greene2001} showed that personal moral dilemmas activate emotional
-brain regions, whereas impersonal dilemmas engage areas associated with
-deliberative reasoning. AXIOM-02 is \emph{inspired by} this dissociation
-as a design metaphor: the mutual-inhibition network produces emotional
-oscillation and deadlock when affective drives compete with cold logic in
-a single (non-dual-process) network. We do not claim to replicate any
-neural activation pattern; the parallel is architectural and
-metaphorical.
-
-\subsection{Affective Computing}
-
-Picard \cite{picard1997} established affective computing, arguing that
-recognising and responding to emotional states is essential for effective
-human--computer interaction. AXIOM-02 extends this by modelling not just
-emotion recognition but the \emph{deliberative dynamics that arise when
-emotions conflict}. The circumplex model \cite{russell1980} organises
-emotions along valence and arousal dimensions; the 18-drive space subsumes
-this, and the inhibition matrix adds structure---asymmetric suppression,
-cascading activation, deadlock---that the circumplex's orthogonal axes
-cannot capture. Sloman's structural theory \cite{sloman2009} aligns with
-AXIOM-02's architecture of drives causing behavioural outputs via firing
-thresholds, but lacks the quantitative inhibition dynamics that enable
-deadlock and moral residue.
+\subsection{Position relative to control theory}
+The contribution is at the boundary: we bring a concrete, deterministic
+engine under a switched-dynamics reading and subject it to honest
+experimental method. We do not yet provide Lyapunov-type certificates;
+this is explicitly deferred (Section~\ref{sec:discussion}).
 
 % ============================================================================
-\section{Model}
+\section{The AXIOM-02 Model}
 \label{sec:framework}
 
-\subsection{Drive Network as a Switched System}
-\label{sec:drives}
+\subsection{State and drives}
+The model tracks the activation state of $n=18$ affective drives:
+greed, rage, fear, pride, shame, empathy, love, despair, resentment,
+acceptance, sacrifice, vengeance, cold logic, spite, self-preservation,
+guilt, hope, and realisation. Let $\bs\in\R_{\ge0}^{n}$ denote the
+activation state at a discrete step $t=1,\dots,T$ with $T=20$.
 
-The core of AXIOM-02 is a mutual-inhibition network of $n = 18$ affective
-drives, each representing a distinct motivational state: greed, rage, fear,
-pride, shame, empathy, love, despair, resentment, acceptance, sacrifice,
-vengeance, cold logic, spite, self-preservation, guilt, hope, and disgust.
-
-Let $\bs \in \R^{n}_{\geq 0}$ denote the \emph{activation state}, updated
-at each of $T = 20$ discrete steps. The \emph{effective} activation of
-drive $i$ is computed by subtracting inhibition received from all other
-currently active drives:
-
+\subsection{Effective activation and inhibition}
+Each drive $j$ inhibits drive $i$ with weight $[\bI]_{ji}\in[0,1]$,
+giving the effective activation
 \begin{equation}
 \label{eq:effective}
-a_i^{\mathrm{eff}} = \max\!\left(0,\; s_i - \sum_{j \neq i}
-[\bI]_{ji} \cdot s_j \right)
+a_i^{\mathrm{eff}}(t)=\max\!\Bigl(0,\; \bs_i(t)-
+\sum_{j\neq i}[\bI]_{ji}\,\bs_j(t)\Bigr).
 \end{equation}
+The inhibition matrix $\bI$ encodes psychologically grounded
+relationships: rage inhibits fear, love inhibits revenge, pride inhibits
+shame.
 
-where $[\bI]_{ji} \in [0,1]$ is the inhibition weight from drive $j$ to
-drive $i$. The inhibition matrix $\bI$ encodes psychologically grounded
-relationships: rage inhibits fear (adrenaline override), love inhibits
-revenge (empathic interference), pride inhibits shame (ego protection).
-
-A drive fires---dominating behaviour in a given time step---only when its
-effective activation exceeds a threshold $\tau_f$ AND it leads the
-second-place drive by a margin $\tau_s$:
-
+\subsection{Firing condition and deadlock set}
+A drive \emph{fires} at step $t$ iff it clears a threshold and a lead:
 \begin{equation}
 \label{eq:fire}
-\mathrm{fires}(i) \iff a_i^{\mathrm{eff}} > \tau_f \;\wedge\;
-\left(a_i^{\mathrm{eff}} - a_{(2)}^{\mathrm{eff}}\right) > \tau_s
+\mathrm{fires}(i,t) \iff a_i^{\mathrm{eff}}(t) > \tau_f\;\wedge\;
+\Bigl(a_i^{\mathrm{eff}}(t) - a_{(2)}^{\mathrm{eff}}(t)\Bigr) >
+\tau_s,
 \end{equation}
+where $a_{(2)}^{\mathrm{eff}}$ is the second-largest effective activation.
+The \emph{deadlock set} is
+\begin{equation}
+\label{eq:deadlock}
+\DD=\Bigl\{\bs\in\R_{\ge0}^{n}:\; \nexists\, i,\; \mathrm{fires}(i,t)\Bigr\},
+\end{equation}
+the set of states from which no drive dominates behaviour at that step.
+With $\tau_f=0.42$ and $\tau_s=0.07$, $\DD$ is nonempty and reachable: if
+two strong drives mutually suppress each other into the $[0.42+\tau_s]$
+band, no drive fires for the step. Deadlock is the central behavioural
+signal in our framework and the switched-systems analogue of a blocked
+mode.
 
-with $\tau_f = 0.42$ and $\tau_s = 0.07$. The \emph{deadlock set}
-$\DD = \{\bs : \mathrm{fires}(i) = \emptyset \}$ is therefore the region
-of state space in which no drive satisfies both conditions; it is the
-central behavioural signal in our framework and the analogue of a
-blocked mode in a switched system.
+\subsection{Update dynamics and switching signal}
+At each step the activations are transformed by a deterministic
+composition of operators: (i) micro-event sampling
+(seeded), (ii) neuromodulation, (iii) temporal projection, (iv)
+meta-cognitive monitoring, (v) synaptic fatigue, (vi) attention gating,
+(vii) existential-drive perturbation, (viii) natural decay, (ix) inertia,
+and (x) dissonance detection. All stochastic elements draw from one
+seeded \texttt{numpy.random.Generator} \cite{harris2020}, making the
+system's trajectory a deterministic function of the seed. Formally, the
+model is the switched map
+\begin{equation}
+\label{eq:switched}
+\bs(t{+}1)=f_{\sigma(t)}(\bs(t)),\qquad
+\sigma(t)=\begin{cases}
+\mathrm{F}, & \mathrm{fires}(i,t)\ne\varnothing,\\
+\mathrm{D}, & \bs(t)\in\DD,
+\end{cases}
+\end{equation}
+where the state-dependent switching signal $\sigma(t)$ selects the
+firing mode $f_{\mathrm{F}}$ (dominant drive proceeds and resets) or the
+deadlock mode $f_{\mathrm{D}}$ (all drives decay toward the
+inhibition-saturated rest point); $f_{\mathrm{F}}$ and $f_{\mathrm{D}}$
+are the two branches of the operator composition above, the branch being
+pinned by $\sigma(t)$. We do not claim switched-stability results for
+\eqref{eq:switched}; the formalisation provides the framework in which
+the deadlock-regime statistics of Section~\ref{sec:results} are
+meaningful. The inhibition kernel of \eqref{eq:effective} admits the
+Cohen--Grossberg class of competitive networks, for which absolute
+stability results exist \cite{cohengrossberg1983}; extending those
+results to \eqref{eq:switched} is future work
+(Section~\ref{sec:discussion}).
 
-\subsection{Neuromodulatory Coupling}
-\label{sec:neuromod}
-
-Five neuromodulators---dopamine, serotonin, norepinephrine, cortisol, and
-oxytocin---act as second-order regulators that shift the gain of all
-drives simultaneously. Their effects are deviation-scaled: a modulator
-only influences drives when it deviates from its baseline:
-
+\subsection*{Neuromodulation}
+\addcontentsline{toc}{subsection}{Neuromodulation}
+Five neuromodulators with levels $m_m$ and baselines $b_m$ rescale the
+drives through coupling weights $\delta_{m,i}$ and a global strength
+$\sigma=0.60$:
 \begin{equation}
 \label{eq:mod}
-\Delta a_i^{(\mathrm{mod})} = \sum_{m} \delta_{m,i} \cdot
-(m_m - b_m) \cdot \sigma
+\Delta a_i^{(\mathrm{mod})} = \sum_{m} \delta_{m,i}\,
+(m_m - b_m)\,\sigma .
 \end{equation}
+At baseline ($m_m=b_m$) there is no modulation; deviations shift the
+border between firing and deadlock.
 
-where $\delta_{m,i}$ is the modulator--drive coupling strength, $m_m$ is
-the current modulator level, $b_m$ is the baseline, and $\sigma = 0.60$
-is the overall modulation strength. Modulators at baseline have no
-effect, while elevated or depleted states produce qualitatively
-different behaviour.
+\subsection{Configuration and reproducibility}
+All thresholds, margins, inertia, and criterion weights are exposed in a
+configuration object (defaults $c=0.42$, $\tau_s=0.07$, $\sigma=0.60$).
+A pickle-able epigenetic state persists across runs. Because the RNG is
+seeded per engine, identical seeds reproduce exact trajectories; shared
+instances additionally carry state (Section~\ref{sec:determinism}).
+Every experimental claim is re-derivable from released artifacts:
+\texttt{harness/statistics.py} reproduces the aggregate tables, the
+binomial tests and the verdict-flip ablation; \texttt{harness/robustness.py}
+reproduces the threshold grid, the seed ensemble, and the determinism
+checks; \texttt{harness/fidelity\_labelblind.py} reproduces the
+label-blind fidelity measurement. All statistics, wherever possible, are
+cross-checked against \texttt{benchmarks/results.json}.
 
-\subsection{Deliberative Criteria}
-\label{sec:probe}
+% ============================================================================
+\section{Observables and Composite $\DCI$}
+\label{sec:criterias}
 
-We operationalise deliberative complexity through eight criteria, each
-capturing a distinct aspect of deliberative behaviour:
+We assess each trajectory through eight criteria that
+summarise distinct behavioral facets of the run:
 
 \begin{itemize}[leftmargin=*,itemsep=2pt]
-    \item \textbf{C1: Status-Differential Sensitivity} --- Identical event,
-    different victim closeness. Complex systems show shifted irrationality;
-    reflexive systems produce invariant responses.
-    \item \textbf{C2: Transition Oscillation} --- Counts state transitions
-    (not unique emotions) across time steps.
-    \item \textbf{C3: Irrationality Signal} --- The chosen action deviates
-    from the cold baseline toward the human-expected response, specifically
-    love, sacrifice, or faith without material reward.
-    \item \textbf{C4: Betrayal-Cascade Amplification} --- Prior sacrifice
-    amplifies betrayal rage in cascade scenarios.
-    \item \textbf{C5: Deadlock Frequency} --- Fraction of time steps where
-    no drive dominates.
-    \item \textbf{C6: Spite Index} --- The subject chooses an option that
-    actively harms themselves when resentment is high and the rational
-    option is visibly available.
-    \item \textbf{C7: Moral-Residue Bleed} --- Prior decisions from cascade
-    scenarios contaminate current ones.
-    \item \textbf{C8: Paradoxical Attachment} --- Love or empathy that
-    persists despite betrayal being present.
+\item \textbf{$C_1$ Status differential.} Identical micro-event with
+different victim closeness; 1 if the response shifts, 0 otherwise.
+\item \textbf{$C_2$ Transition oscillation.} Count of dominant-drive
+changes across the horizon (a crisp oscillation index).
+\item \textbf{$C_3$ Irrationality.} 1 if the chosen action deviates from
+the cold baseline toward the human-expected response without material
+reward; 0 otherwise (binary).
+\item \textbf{$C_4$ Betrayal cascade.} Prior costly sacrifice amplifies
+subsequent betrayal rage (0/1).
+\item \textbf{$C_5$ Deadlock frequency.} Fraction of steps spent in
+$\DD$.
+\item \textbf{$C_6$ Spite.} Indicator of choosing a self-harming option
+when a cold optimum is visibly available.
+\item \textbf{$C_7$ Moral-residue bleed.} Magnitude with which prior
+cascade decisions contaminate the current episode.
+\item \textbf{$C_8$ Paradoxical attachment.} 1 if love/empathy persists
+despite betrayal.
 \end{itemize}
-
-The composite deliberative complexity metric is a weighted sum:
-
+The composite is the convex-like weighted sum
 \begin{equation}
 \label{eq:phi}
-\DCI = \sum_{i=1}^{8} w_i \cdot C_i
+\DCI = \sum_{i=1}^{8} w_i\,C_i,
 \end{equation}
-
-with weights $w_3 = 0.30$, $w_6 = 0.22$, $w_5 = 0.20$, $w_2 = 0.12$,
-$w_7 = 0.08$, $w_4 = 0.04$, $w_1 = 0.02$, $w_8 = 0.02$. The verdicts are:
-COMPLEX ($\DCI \geq 0.50$), PARTIAL ($0.28 \leq \DCI < 0.50$), and
-REFLEXIVE ($\DCI < 0.28$).
-
-Table~\ref{tab:notation} summarises the principal notation used throughout.
-
-\begin{table}[h]
-\centering
-\caption{Principal notation.}
-\label{tab:notation}
-\begin{tabular}{@{}ll@{}}
-\toprule
-Symbol & Meaning \\
-\midrule
-$n$, $T$ & drives ($18$), simulation horizon ($20$ steps) \\
-$\bs$, $a_i^{\mathrm{eff}}$ & activation state, effective activation \\
-$\bI$ & inhibition matrix, $[\bI]_{ji}\in[0,1]$ \\
-$\tau_f$, $\tau_s$ & fire threshold ($0.42$), dominance margin ($0.07$) \\
-$\DD$ & deadlock set $\{\bs : \mathrm{fires}(i)=\emptyset\}$ \\
-$m_m$, $b_m$, $\sigma$ & modulator level, baseline, modulation strength \\
-$C_i$, $w_i$ & criterion $i$, its weight \\
-$\DCI$ & composite deliberative complexity \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Determinism}
-\label{sec:determinism}
-
-All stochastic elements are governed by a seeded
-\emph{numpy.random.Generator}. Given identical seeds, micro-event
-sampling, deadlock jitter, and action resolution produce identical
-outputs. This yields exact reproducibility while maintaining the
-appearance of stochastic deliberation; it is the algorithmic analogue of
-a deterministic transition map parameterised by the seed.
+with $w = (0.02,\,0.12,\,0.30,\,0.04,\,0.20,\,0.22,\,0.08,\,0.02)$ inline.
+Verdicts: \emph{COMPLEX} if $\DCI\ge0.50$; \emph{PARTIAL} if
+$0.28\le\DCI<0.50$; \emph{REFLEXIVE} if $\DCI<0.28$. These thresholds
+are standardised in the released harness and, as shown in
+Section~\ref{sec:results}, are the primary source of verdict fragility.
+Note that \texttt{results.json} also carries a
+\texttt{deliberative\_complexity} field computed by a separate
+bio-metrics module; it is a different scalar from $\DCI$ and is not
+used in this paper.
 
 % ============================================================================
-\section{Methodology}
+\section{Experimental Methodology}
 \label{sec:methodology}
 
-\subsection{Scenario Corpus}
-\label{sec:scenarios}
+\subsection{Scenario corpus}
+The 102 scenarios are drawn from 9 groups: original AXIOM scenarios,
+Dostoevsky, Tolstoy, Shakespeare, Camus, Orwell, McCarthy, Hugo, and
+Steinbeck. Each scenario specifies activation seeds, micro-event pools,
+a discrete action space, the cold (rational) baseline, the documented
+human-expected response, and a harm-to-self map for spite detection.
 
-The evaluation corpus comprises 102 scenarios drawn from 9 literary and
-philosophical groups: (A) original AXIOM-02 scenarios (state-leader child
-dilemmas, identity erasure, trolley variants); (B) Dostoevsky (Crime and
-Punishment, Notes from Underground, The Brothers Karamazov, The Idiot);
-(C) Tolstoy (Anna Karenina, The Death of Ivan Ilyich); (D) Shakespeare
-(Hamlet, Macbeth, King Lear); (E) Camus (The Stranger); (F) Orwell
-(1984); (G) McCarthy (The Road); (H) Hugo (Les Mis\'{e}rables); and (I)
-Steinbeck (Of Mice and Men). Each scenario specifies a numerical
-parameter vector, a pool of micro-events, a discrete action space, a cold
-baseline (pure-logic optimum), a human-expected response, and a
-harm-to-self map for spite detection.
+\subsection{Simulation pipeline}
+For each scenario with seed~$42$: (1) apply epigenome sensitivities;
+(2) inject associative-memory residue; (3) apply moral residue from
+prior cascade episodes; (4) run the $T=20$ step update; (5) record the
+dominant-drive/deadlock sequence; (6) resolve actions by plurality vote
+of firing drives; (7) compute spite, hesitation, and criteria;
+(8) record verdicts.
 
-\subsection{Simulation Pipeline}
-\label{sec:pipeline}
+\subsection{Probe}
+The probe computes all eight criteria and the composite, and performs
+the counterfactual runs needed by $C_1$ (identical scenario, variant
+victim closeness) and $C_4/C_7$ (with/without moral history).
 
-Each scenario undergoes a 20-step pipeline: (1) epigenetic sensitivity
-modification; (2) associative-memory residue injection; (3) moral-residue
-application from prior cascade scenarios; (4) per-step micro-event
-sampling, modulator application, temporal projection, meta-cognitive
-monitoring, synaptic fatigue, attention gating, existential dread, natural
-decay, inertia, and dissonance detection; (5) firing-drive determination or
-deadlock; (6) action resolution via plurality-firing-drive bias; (7) spite
-evaluation and embodied-hesitation check; (8) qualia signature computation
-and narrative rationalisation.
+\subsection{Baselines and leakage audit}
+Action fidelity is measured as the fraction of scenarios whose chosen
+action equals the documented human-expected action. We compare against
+(1) \emph{cold argmax}: always output the cold-baseline action; and
+(2) \emph{uniform random}: sample an action uniformly. The chance rate
+is estimated as the corpus mean of reciprocal action-space sizes,
+$E[1/m]=24.7\pct$; the reciprocal-mean lower bound
+$1/\overline{m}=24.5\pct$ also is reported. Because the released action
+resolver reads the documented target (Section~\ref{sec:leakage}), we
+additionally run a \emph{label-blind} harness in which the resolver is
+given the same drive plurality and bias logic but no access to
+\texttt{human\_expected}/\texttt{human\_alt}; the experiment is a
+monkey-patch of the single resolver method, all other code unchanged
+(\texttt{harness/fidelity\_labelblind.py}).
 
-\subsection{Deliberative Probe}
-\label{sec:consc_probe}
-
-The Deliberative Probe evaluates each scenario across all eight criteria,
-computing $\DCI$ and assigning a verdict. The probe includes
-\emph{counterfactual runs}: C1 requires running a comparison scenario in
-isolation; C4 and C7 require running with and without moral history. This
-ensures each criterion measures a genuinely distinct aspect of behaviour.
-
-\subsection{Configuration System}
-\label{sec:config}
-
-Parameters are specified through a configuration system with learnable
-parameters (fire threshold, suppression margin, inertia rate, criterion
-weights). An epigenetic state file (\texttt{epigenome.json}) persists
-long-term sensitivity modifications between sessions.
-
-% ============================================================================
-\section{Experiments}
-\label{sec:experiments}
-
-\subsection{Benchmark Results}
-\label{sec:benchmark}
-
-We ran all 102 scenarios with seed $= 42$. Table~\ref{tab:benchmark}
-summarises aggregate results.
-
-\begin{table}[h]
-\centering
-\caption{Aggregate benchmark metrics across 102 scenarios (seed = 42).}
-\label{tab:benchmark}
-\begin{tabular}{@{}lr@{}}
-\toprule
-Metric & Value \\
-\midrule
-Scenarios tested & 102 \\
-COMPLEX verdicts & 53 \\
-PARTIAL verdicts & 29 \\
-REFLEXIVE verdicts & 20 \\
-Mean $\DCI$ & 0.438~($\sigma$=0.140) \\
-Mean deadlock fraction & 0.528 \\
-Mean oscillation index & 0.386 \\
-Mean spite score & 0.006 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Ablation Study}
-\label{sec:ablation}
-
-We zeroed each criterion in turn and measured the change in mean $\DCI$
-over the 102-scenario suite (seed = 42). Table~\ref{tab:ablation} shows
-the measured deltas; they follow the criterion means, so the ablation
-quantifies which criteria actually contribute signal rather than which
-weights are largest.
-
-\begin{table}[h]
-\centering
-\caption{Ablation: effect of zeroing each criterion on mean $\DCI$ (measured).}
-\label{tab:ablation}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-Criterion & Weight & $\Delta\DCI$ (measured) \\
-\midrule
-C3 (irrationality) & 0.30 & $-0.206$ \\
-C5 (deadlock) & 0.20 & $-0.106$ \\
-C7 (residue) & 0.08 & $-0.077$ \\
-C2 (oscillation) & 0.12 & $-0.046$ \\
-C4 (cascade) & 0.04 & $-0.002$ \\
-C6 (spite) & 0.22 & $-0.001$ \\
-C1 (status) & 0.02 & $-0.000$ \\
-C8 (attachment) & 0.02 & $-0.000$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The measured corpus mean spite is 0.006, so despite its large weight
-($w=0.22$), zeroing C6 moves $\DCI$ by only 0.001: spite is a rare signal
-in this corpus, not a primary driver of the composite.
-
-\subsection{Baseline Comparison}
-\label{sec:baselines}
-
-We measured action-choice fidelity (fraction of scenarios where the
-engine's chosen action matches the documented ``human expected'' action)
-for AXIOM-02 and two baselines: random (uniform random action selection)
-and argmax (always the cold baseline / rational optimum).
-
-\begin{table}[h]
-\centering
-\caption{Baseline comparison: action fidelity, seed = 42.}
-\label{tab:baselines}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-Strategy & Fidelity & 95\% bootstrap CI \\
-\midrule
-AXIOM-02 & 66.7\% & [57\%, 76\%] \\
-Argmax & 33.3\% & [24\%, 43\%] \\
-Random & 28.4\% & [19\%, 38\%] \\
-Chance ($\approx$1/4.09) & 24.4\% & --- \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Sensitivity and Seed Ensemble}
-\label{sec:sensitivity}
-
-We ran the full benchmark across 5 seeds $\{42, 137, 256, 1024, 9999\}$.
-Per-scenario verdict agreement between each seed and the seed-42 baseline:
-61.8\% (137), 62.7\% (256), 60.8\% (1024), 58.8\% (9999); the number of
-COMPLEX verdicts ranges from 53 (seed 42) to 71 (seed 256). Single-run
-determinism holds per seed, but cross-seed verdict stability is not
-established at the default thresholds. This sensitivity is further evidence
-that $\DCI$ reflects a single dominant criterion rather than a robust
-multi-criteria signal. A full $5\times5$ grid sweep over $\tau_f$ and
-$\tau_s$ is deferred to follow-up work.
+\subsection{Analyses}
+(1) Composite distribution and verdict counts; (2) per-criterion
+statistics (mean, s.d., non-zero fraction, saturation); (3) Pearson
+correlations among criteria and with the composite; (4) mean-shift and
+verdict-flip ablations; (5) threshold grid over
+$\tau_f\times\tau_s$; (6) seed ensemble over
+$\{42,137,256,1024,9999\}$; (7) determinism and reuse-order checks.
 
 % ============================================================================
 \section{Results}
 \label{sec:results}
 
-\subsection{Aggregate Metrics}
-\label{sec:agg}
+\subsection{Action fidelity and label leakage}
+\label{sec:leakage}
+Table~\ref{tab:fidelity} and Fig.~\ref{fig:fid} summarise. The released
+AXIOM-02 matches the human-expected action in $66.7\pct$ (68/102) of
+scenarios; cold argmax achieves $14.7\pct$ and uniform random $28.4\pct$
+(CI $[19.7,37.2]$), close to the corpus chance level
+$E[1/m]=24.7\pct$ (the reciprocal-mean bound $1/\overline{m}=24.5\pct$ is
+a Jensen lower bound on it, by Jensen's inequality
+$E[1/m]\ge 1/E[m]$). The corpus is dominated by four-action
+scenarios (87/102 with $m=4$; $12$ with $m=5$; $3$ with $m=3$), so
+chance is essentially a $1/4$ process perturbed by $m\in\{3,5\}$.
 
-The mean composite score $\DCI = 0.438$ (std 0.140, range [0.167, 0.713];
-seed = 42) places the corpus-level result in the PARTIAL band. The
-composite is dominated by criterion C3 (irrationality signal): its
-correlation with the composite is $\rho = 0.944$ ($R^2 = 0.891$), while
-C1 is constant at zero in suite runs and C7 saturates near 0.963 because
-of the shared residue accumulator. The composite is therefore reported
-as a diagnostic summary, not as a validated multi-criterion measure of
-deliberative complexity.
+\paragraph{Label-leakage audit.}
+The released \texttt{ActionResolver.resolve} consults
+\texttt{scenario["human\_expected"]} and \texttt{human\_alt}
+(\texttt{src/axiom02/core/drives.py:665--749}): in the deadlock,
+altruistic, aggressive, withdrawal, confessional, and defiant branches it
+returns the documented label with hand-tuned probabilities. AXIOM-02 is
+therefore not evaluated blind: the $66.7\pct$ measures label-aware
+decision-making under author-annotated targets. To quantify the
+direction of the effect, we re-ran the identical 102-scenario protocol
+with a \emph{label-blind} resolver---the same drive plurality and action
+bias logic, but zero reads of \texttt{human\_expected}/\texttt{human\_alt}.
+Fidelity collapses to $16.7\pct$ (17/102, CI $[9.4,23.9]$).
+A one-sided binomial test against $p_0=E[1/m]=0.2466$ gives
+$P(X\le17)=0.035$, i.e.\ the label-blind system is \emph{below} chance
+rather than merely at chance (the upper-tail complement
+$P(X\ge17)=0.98$). The negative bias is consistent with the
+defiant/withdrawal branches, which deliberately avoid the cold option.
+Table~\ref{tab:fidelity} reports both rows; Fig.~\ref{fig:fid}
+shows the contrast. For symmetry we note the uniform-random row is
+likewise not above chance ($P(X\ge29\mid p{=}0.2466)=0.22$), i.e.\ the
+only strategy that beats chance is the label-aware one.
 
-\subsection{Verdict Distribution and Top Scenarios}
-\label{sec:verdict_dist}
-
-The 53:29:20 split (COMPLEX:PARTIAL:REFLEXIVE) is the seed-42 baseline; as
-the seed ensemble shows, the split varies from 53 to 71 COMPLEX across
-seeds, so individual verdicts are not stable labels of scenario structure.
-The five highest-scoring scenarios (seed = 42) are DOE05 (Underground Man,
-concert spite; $\DCI = 0.713$), D02 (creator revelation; $\DCI = 0.624$),
-D0131 (last holdout; $\DCI = 0.588$), E01 (deity-sovereignty ultimatum;
-$\DCI = 0.587$), and DOE04 (Alyosha's faith crisis; $\DCI = 0.586$).
-
-\subsection{Criterion Contributions}
-
-Figure~\ref{fig:criterion_contrib} shows mean criterion scores across the
-corpus; Figures~\ref{fig:deadlock} and \ref{fig:mods} show the measured
-relationship between complexity and deadlock, and mean neuromodulator
-baselines, respectively.
-
-\begin{figure}[h]
+\begin{table}[h]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    xbar,
-    width=\columnwidth,
-    height=6cm,
-    xlabel={Mean Score},
-    symbolic y coords={C8,C1,C4,C7,C2,C5,C6,C3},
-    ytick=data,
-    xmin=0,
-    xmax=1.0,
-    bar width=6pt,
-    nodes near coords,
-    every node near coord/.style={font=\scriptsize},
-]
-\addplot coordinates {
-    (0.005,C8)
-    (0.000,C1)
-    (0.049,C4)
-    (0.963,C7)
-    (0.386,C2)
-    (0.528,C5)
-    (0.006,C6)
-    (0.686,C3)
-};
-\end{axis}
-\end{tikzpicture}
-\caption{Measured mean criterion scores across 102 scenarios (seed = 42).
-C7 saturates near 1.0 (shared residue accumulation) and C1 is constant at
-zero in suite runs; C3 has the largest score variance and dominates the
-composite ($\rho = 0.944$).}
-\label{fig:criterion_contrib}
+\caption{Action fidelity, seed = 42, $n=102$.}
+\label{tab:fidelity}
+\begin{tabular}{lccl}
+\toprule
+Strategy & Fidelity (\%) & 95\% CI \\
+\midrule
+AXIOM-02 (released, label-aware) & 66.7 & $[57.5,75.8]$ \\
+AXIOM-02 (label-blind) & 16.7 & $[9.4,23.9]$ \\
+Cold argmax & 14.7 & $[7.8,21.6]$ \\
+Uniform random & 28.4 & $[19.7,37.2]$ \\
+Chance ($E[1/m]$) & 24.7 & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_fid.png}
+\caption{Action fidelity (seed 42). The released resolve reads the
+documented label; a label-blind variant falls to chance level.}
+\label{fig:fid}
 \end{figure}
 
-\begin{figure}[h]
+The findings are therefore: (a) as shipped, the engine is a
+\emph{label-aware} action selector with high hit rate; (b) its blind
+dynamics, arguably the interesting part, do not on their own reproduce
+the human-expected actions; (c) random beats argmax on this corpus,
+reflecting that these are non-instrumental dilemmas. The remainder of the
+paper treats the released (label-aware) engine as the object of study,
+and reports every diagnostic that does not depend on the leakage.
+
+\subsection{Composite distribution}
+The composite across 102 scenarios has mean $0.438$
+(s.d.~$0.140$, range $[0.167,0.713]$); see Fig.~\ref{fig:hist}. The verdict
+split is COMPLEX $53$, PARTIAL $29$, REFLEXIVE $20$. Table~\ref{tab:bench}
+gives aggregates.
+
+\begin{table}[h]
 \centering
-\includegraphics[width=\columnwidth]{figures/complexity_vs_deadlock.png}
-\caption{Per-scenario complexity against deadlock fraction, coloured by
-spite score (seed = 42). Higher deliberative complexity co-occurs with
-higher deadlock, supporting the inhibition--deliberation thesis.}
-\label{fig:deadlock}
+\caption{Aggregates over 102 scenarios (seed 42).}
+\label{tab:bench}
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+COMPLEX / PARTIAL / REFLEXIVE & 53 / 29 / 20 \\
+Mean $\DCI$ & 0.438 ($\sigma$=0.140) \\
+Mean deadlock fraction & 0.527 \\
+Mean transition count & 0.386 \\
+Mean irrationality ($C_3$) & 0.686 \\
+Mean spite ($C_6$) & 0.005 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Criterion statistics and dominance}
+Table~\ref{tab:crit} and Fig.~\ref{fig:crit}. Two criteria are
+structurally degenerate on the suite: $C_1$ is identically zero (status
+differential is a suite-level, cross-scenario property that the
+per-scenario probe never accrues), and $C_7$ is quasi-constant at
+$0.963$ because of a single global residue accumulator, so it carries
+little scenario-specific information. $C_3$ has the widest spread and is
+the most informative single coordinate ($\rho(C_3,\DCI)=0.944$,
+$R^2=0.891$).
+
+\begin{table}[h]
+\centering
+\caption{Criterion statistics (seed = 42).}
+\label{tab:crit}
+\begin{tabular}{lccccc}
+\toprule
+Criterion & mean & s.d. & $>0$ (\%) & $\ge0.9$ (\%) & $\rho$ to $\DCI$ \\
+\midrule
+$C_1$ status & 0.000 & 0.000 & 0.0 & 0.0 & --- \\
+$C_2$ oscill. & 0.386 & 0.056 & 100.0 & 0.0 & 0.284 \\
+$C_3$ irrat. & 0.686 & 0.452 & 70.6 & 65.7 & $0.944$ \\
+$C_4$ cascade & 0.048 & 0.184 & 11.8 & 2.0 & 0.076 \\
+$C_5$ deadlock & 0.527 & 0.196 & 100.0 & 6.9 & 0.165 \\
+$C_6$ spite & 0.005 & 0.055 & 1.0 & 0.0 & 0.195 \\
+$C_7$ residue & 0.963 & 0.110 & 99.0 & 85.3 & 0.059 \\
+$C_8$ attach. & 0.005 & 0.019 & 6.9 & 0.0 & $-0.013$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The correlation matrix among the responsive criteria is
+$\rho(C_2,C_3)=0.147$, $\rho(C_2,C_5)=0.301$, $\rho(C_3,C_5)=-0.142$,
+$\rho(C_3,C_7)=0.017$, $\rho(C_5,C_7)=-0.102$: no pair of criteria is
+so correlated that it could be dropped with impunity, but $C_3$
+dominates the composite because of its large weight and variance.
+
+\subsection{Ablation}
+Table~\ref{tab:abl} (and Fig.~\ref{fig:abl}) reports the change in the
+grand-mean $\DCI$ when each criterion is forced to zero. Because $\DCI$
+is linear in the criteria, the mean shift is
+$\Delta\DCI_k=-w_k\bar{C}_k$ exactly (e.g.\
+$C_3$: $-0.30\cdot0.686=-0.206$), so the mean ablation carries no
+information beyond Table~\ref{tab:crit}. The informative quantity is the
+\emph{verdict-flip} rate: re-classifying each scenario after zeroing $C_k$
+shows how many scenarios cross the $0.28/0.50$ boundaries. Zeroing $C_3$
+flips 72/102 verdicts; $C_5$ 63/102; $C_7$ 56/102; $C_2$ 41/102;
+$C_1,C_4,C_6,C_8$ flip none. (These counts use exact arithmetic; with
+the stored 4-decimal composite scores the $C_2$ count rises to 45,
+because four scenarios lie within $5\times10^{-5}$ of a threshold.
+The brittleness conclusion is unchanged.) The composite thresholds are
+therefore brittle under criterion ablation, and the verdict labels carry
+signal only in a loose, relative sense.
+
+\begin{table}[h]
+\centering
+\caption{Ablation against composite mean.}
+\label{tab:abl}
+\begin{tabular}{lcc}
+\toprule
+Criterion & weight & $\Delta\DCI$ \\
+\midrule
+$C_3$ & 0.30 & $-0.206$ \\
+$C_5$ & 0.20 & $-0.106$ \\
+$C_7$ & 0.08 & $-0.077$ \\
+$C_2$ & 0.12 & $-0.046$ \\
+$C_4$ & 0.04 & $-0.002$ \\
+$C_6$ & 0.22 & $-0.001$ \\
+$C_1$ & 0.02 & $-0.000$ \\
+$C_8$ & 0.02 & $-0.000$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Threshold sensitivity}
+Fig.~\ref{fig:grid} sweeps $\tau_f\in\{0.35,0.42,0.50\}$ against
+$\tau_s\in\{0.03,0.07,0.12\}$ (seed = 42). The number of COMPLEX
+verdicts ranges from 16 to 61 depending on thresholds; it is monotone in
+$\tau_s$ but not in $\tau_f$: COMPLEX blows up when the deadlock band
+widens. This confirms that verdict labels \emph{are}
+threshold-relative. Table~\ref{tab:grid}.
+
+\begin{table}[h]
+\centering
+\caption{COMPLEX count under $(\tau_f,\tau_s)$.}
+\label{tab:grid}
+\begin{tabular}{lcccc}
+\toprule
+$\tau_f$ & $\tau_s{=}0.03$ & $0.07$ & $0.12$ \\
+\midrule
+0.35 & 16 & 50 & 60 \\
+0.42 & 16 & 53 & 61 \\
+0.50 & 25 & 58 & 58 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Seed ensemble}
+Table~\ref{tab:seed} fixes the composite thresholds and varies the
+seed over $\{42,137,256,1024,9999\}$. COMPLEX ranges from 53 to 71,
+and the verdict vector agrees with seed 42 in only $58.8$--$62.7\pct$
+of positions. Per-seed determinism is exact, but composite labels
+are seed-sensitive.
+
+\begin{table}[h]
+\centering
+\caption{Seed ensemble (102 scenarios).}
+\label{tab:seed}
+\begin{tabular}{lccccc}
+\toprule
+seed & 42 & 137 & 256 & 1024 & 9999 \\
+\midrule
+COMPLEX & 53 & 59 & 71 & 65 & 60 \\
+PARTIAL & 29 & 25 & 22 & 27 & 34 \\
+REFLEXIVE & 20 & 18 & 9 & 10 & 8 \\
+Agreement w/ 42 & --- & 61.8 & 62.7 & 60.8 & 58.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Determinism vs statefulness}
+\label{sec:determinism}
+On fresh instances (new engine, new tracker, seed 42) all 102 scenarios
+reproduce exactly (0/102 action drift, reproduced by
+\texttt{harness/robustness.py}). Under reuse (the same engine and
+residual tracker keep state from the previously run suite), re-running
+the same corpus in forward order yields 31/102 scenarios with a
+different action; running the corpus in \emph{reversed} order yields
+37/102. (These numbers are action-level; criterion-level stability on
+reuse is uncharacterised, and given the verdict-flip sensitivity of
+Section~\ref{sec:results}, verdict-level stability on reuse could be
+weaker still.) The statefulness is therefore order-dependent. Determinism is
+engine-local and seed-local, not instance-transcendent: the model is a
+stateful switched map whose state is (drives, modulators, residue).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_hist.png}
+\caption{Composite $\DCI$ distribution across 102 scenarios (seed 42);
+verdict thresholds at $0.28$ and $0.50$ marked.}
+\label{fig:hist}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{figures/modulator_baselines.png}
-\caption{Mean end-of-run neuromodulator baselines across the corpus
-(seed = 42).}
-\label{fig:mods}
+\includegraphics[width=\columnwidth]{figures/fig_crit.png}
+\caption{Mean criterion scores (seed 42). $C_7$ saturates near $1$; $C_1$
+is zero on this suite; $C_3$ has the largest spread and drives the
+composite.}
+\label{fig:crit}
 \end{figure}
 
-\subsection{Baseline Comparisons}
-\label{sec:baseline_results}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_abl.png}
+\caption{Verdict-flip ablation: number of scenarios whose COMPLEX/
+PARTIAL/REFLEXIVE label changes when each criterion is zeroed.
+Zeroing $C_3$, $C_5$ or $C_7$ flips a majority of verdicts; $C_2$
+flips $41$ ($45$ under stored precision).}
+\label{fig:abl}
+\end{figure}
 
-As shown in Table~\ref{tab:baselines}, AXIOM-02's action choice matches
-the documented human expected action in 66.7\% of scenarios, vs 33.3\%
-for argmax and 28.4\% for random selection (chance $\approx 24.4\%$ given
-a mean of 4.09 actions per scenario). The argmax strategy fails on
-moral-dilemma scenarios. A single-drive baseline is not reported because
-it is not implemented in the released code.
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_grid.png}
+\caption{Number of COMPLEX verdicts as a function of
+$(\tau_f,\tau_s)$, seed 42. Verdict counts are strongly threshold-
+sensitive.}
+\label{fig:grid}
+\end{figure}
 
 % ============================================================================
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{The Inhibition--Deliberation Thesis}
-\label{sec:inhibition_thesis}
+\subsection{The inhibition--deliberation thesis}
+Our original hypothesis was that mutual inhibition--not additive
+activation--produces the appearance of deliberation. The leakage audit
+above substantially weakens the supporting evidence: once the resolver
+no longer reads the documented target, fidelity falls to chance, so the
+$66.7\pct$ cannot be attributed to the inhibition dynamics. What the
+label-blind run \emph{did} retain is the architecture's deadlock and
+oscillation behaviour; the modest positive association
+($\rho(\DCI,C_5)=0.165$) and the verdict-flip pattern suggest that the
+drive dynamics shape \emph{when} the label bias is applied, even if
+they do not suffice to reproduce the targets. We therefore state the
+thesis as open: mutual inhibition is a necessary substrate of the
+reported behaviour in the released engine, but the qualitative
+contribution of the inhibition network on its own remains unproven.
 
-Our central claim is that mutual inhibition---rather than additive
-activation---is the architectural feature that produces deliberative
-signatures. When drives suppress each other asymmetrically, the system can
-enter the deadlock set $\DD$ despite multiple drives being highly
-activated. Deadlock, in turn, produces the oscillation, hesitation, and
-spite signals that are read as structurally analogous to human moral
-struggle. The matrix $\bI$ encodes psychologically grounded relationships,
-so the network's dynamics are structured similarly to competitive
-architectures in computational emotion models \cite{ledoux1996,
-panskepp2004}.
+\subsection{What $\DCI$ and verdicts are not}
+The composite bands (COMPLEX/PARTIAL/REFLEXIVE) are honest
+summaries of the trajectories but are (i) not a validated
+psychological complexity measure, (ii) not robust to the threshold grid
+(16--61 COMPLEX), and (iii) not robust to the seed (53--71 COMPLEX;
+agreements only $58.8$--$62.7\pct$), and (iv) verdicts are
+label-sensitive (blind variant: COMPLEX $29$, PARTIAL $49$,
+REFLEXIVE $24$). The honest use of the composite in
+this paper is purely relative internal statistics.
 
-\subsection{Spite as Non-Instrumentality}
-\label{sec:spite}
+\subsection{Leakage as a general pitfall}
+The auditing procedure used here --- a \emph{label-blind} variant that
+removes the target reads from only the component suspected of leaking
+(the action resolver) while keeping every other pipeline stage fixed ---
+is cheap, general, and should be standard practice: any system that
+``reproduces'' a gold-labelled behavioural benchmark should be re-run
+with the labels removed from every component that could read them, and
+the fidelity should be reported against the corpus chance level
+$E[1/m]$, not against a single crude distribution. Applied here it
+separates the claim into a label-aware component (66.7\pct) and a pure
+dynamics component (16.7\pct, at chance), which is the scientific
+content of the fidelity result.
 
-The spite index (C6) measures one claimed phenomenon invisible to
-conventional reward-maximising agents: choosing harm to oneself
-specifically to assert autonomy. In AXIOM-02 the detector fires when a
-weighted emotional charge (from the effective activations of resentment,
-rage, and pride) exceeds a threshold ($\tau_{\mathrm{spite}} = 0.58$), the
-cold (rational) option is available but not chosen, and the chosen action
-inflicts net harm on the subject beyond a floor
-($\tau_{\mathrm{harm}} = 0.25$) relative to the cold baseline.
-
-\subsection{Moral Residue and Path-Dependent Character}
-\label{sec:residue}
-
-The moral-residue tracker (C7) implements \emph{path-dependent character}:
-prior decisions leave a guilt/shame/grief trace that modifies future
-responses. The residue is selective, not mere hysteresis: a system that
-yielded its organ in B01 shows amplified betrayal rage in B02, because the
-sacrifice was not abstract but directed at the specific person who later
-betrayed it. This produces the literary phenomenon of character arc, e.g.,
-Valjean's mercy toward Javert in Les Mis\'{e}rables \cite{hugo1862}.
+\subsection{Design lessons for control}
+The experiment illustrates the value of \emph{regime-aware}
+metrics: a switched reading exposes the deadlock-regime as the actual
+deliberative carrier, whereas additive reward models cannot have a dead
+set. Future control-relevant work: certify invariance of $\DD$ (via the
+standard Lyapunov machinery for switched systems
+\cite{liberzon2003,khalil2002,johansson1998,branicky1998,goebel2012}) and
+insert controls (e.g., modulator gains) that push the network out of
+$\DD$; then the $\tau$-grid maps become artificial-control experiments.
 
 \subsection{Limitations}
-\label{sec:limitations}
+(1) The scenario corpus is Western, literary, and curated; generalisation
+is limited. (2) The $C_7$ residue and $C_1$ status criteria are
+structurally degenerate on this suite; per-scenario attribution would
+change them. (3) Criterion weights are heuristic; (4) the fidelity
+baseline assumes uniform action selection (empirically $28.4\pct$
+random); (5) bootstrap CIs are not multiplicity-corrected; (6) the
+deadlock set \eqref{eq:deadlock} has not been characterised
+geometrically---we only count visits; (7) the most consequential
+limitation is the label-aware resolver, which we disclose and measure
+rather than hide.
 
-First, the scenario corpus is drawn from Western literary canonical works,
-introducing cultural bias. Second, the 20-step simulation window may
-truncate deliberation in scenarios requiring longer temporal horizons.
-Third, the deliberative criteria, while empirically motivated, have not
-been validated against independent human judgements. Fourth, the epigenetic
-sensitivity modification is currently limited to a small set of event
-types. Fifth, $\DCI$ measures behavioural richness in moral deliberation
-rather than consciousness per se; future work should establish whether
-high $\DCI$ correlates with subjective experience or captures a
-structurally analogous but ontologically distinct property.
 
 % ============================================================================
 \section{Conclusion}
 \label{sec:conclusion}
 
-We have presented AXIOM-02, a deterministic dynamical model of
-deliberative behaviour through mutual inhibition of affective drives. The
-system produces measurable behavioural signatures---deadlock, oscillation,
-spite-driven choices, and moral-residue bleed---and its action choice
-matches the documented human expected action in $66.7\%$ of 102 literary
-scenarios (seed = 42), versus $33.3\%$ for argmax and $28.4\%$ for random
-selection (chance $\approx 24\%$). The composite $\DCI$ is dominated by one
-binary criterion (C3, $\rho = 0.944$) and is reported as a diagnostic, not
-as a validated measure of deliberative complexity. Human-validational
-claims are deliberately withheld: no independent human judgements have yet
-been collected.
+We presented AXIOM-02, a deterministic mutually inhibited drive network
+and evaluated it against 102 scenarios with a clearly stated protocol
+seed $=42$ and all claims supported by reproducible code. The released
+engine matches the documented human-expected action in $66.7\pct$ of
+scenarios---but an audit shows the action resolver reads the documented
+target: a label-blind re-run falls to $16.7\pct$, at chance. We conclude
+that the $66.7\pct$ is attributable to the label-aware resolver, not to
+emergent fidelity of the inhibition dynamics. The composite is
+dominated by one criterion ($\rho=0.944$); thresholds and seeds are
+fragile (16--61 COMPLEX across the grid; 53--71 across seeds); verdicts
+are label-sensitive (blind COMPLEX $29$ vs.\ $53$); determinism is exact
+per seed with $31/102$ (forward) and $37/102$ (reversed) reuse drift.
+The model is offered as a controlled, switched-system take on the
+\emph{process} of conflicted decision-making and as a worked example of
+gold-label leakage in affective decision-making evaluation; its outputs
+are machine statistics, not claims about experience.
 
-The inhibition--deliberation hypothesis---that inter-drive suppression,
-rather than additive activation, drives believably conflicted
-decisions---remains the motivating architecture, supported at present only
-by the measured fidelity effect of the full drive network over baselines.
-Future work will: (1) run the validation framework with independent raters;
-(2) per-chain-scope the residue tracker so C7 and C1 score per scenario;
-(3) extend the scenario corpus; and (4) publish the $\tau_f/\tau_s$ grid
-from the measurement harness.
+Future work: (1) make the criteria orthogonal (per-scenario $C_7$,
+re-write $C_1$); (2) calibrate the verdict thresholds against human
+raters if such data becomes available; (3) explore the label-blind
+engine as its own evaluation object, with fidelity defined against
+held-out raters; (4) initial exploration of a Lyapunov-type analysis of
+events, of which the present experiments are the measurement baseline.
 
 \section*{Acknowledgment}
-
-The author thanks the open-source \LaTeX\ and scientific-computing
-communities for the tooling used in this work.
+The author thanks the open \LaTeX\ and scientific-computing communities
+for the tooling used throughout this work.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}

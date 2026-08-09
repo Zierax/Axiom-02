@@ -1,0 +1,45 @@
+{
+  "grid": {
+    "0.35/0.03": 16,
+    "0.35/0.07": 50,
+    "0.35/0.12": 60,
+    "0.42/0.03": 16,
+    "0.42/0.07": 53,
+    "0.42/0.12": 61,
+    "0.5/0.03": 25,
+    "0.5/0.07": 58,
+    "0.5/0.12": 58
+  },
+  "seeds": {
+    "42": {
+      "COMPLEX": 53,
+      "PARTIAL": 29,
+      "REFLEXIVE": 20
+    },
+    "137": {
+      "COMPLEX": 59,
+      "PARTIAL": 25,
+      "REFLEXIVE": 18
+    },
+    "256": {
+      "COMPLEX": 71,
+      "PARTIAL": 22,
+      "REFLEXIVE": 9
+    },
+    "1024": {
+      "COMPLEX": 65,
+      "PARTIAL": 27,
+      "REFLEXIVE": 10
+    },
+    "9999": {
+      "COMPLEX": 60,
+      "PARTIAL": 34,
+      "REFLEXIVE": 8
+    }
+  },
+  "determinism": {
+    "fresh": 0,
+    "reuse_forward": 31,
+    "reuse_reversed": 37
+  }
+}
