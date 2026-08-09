@@ -35,3 +35,7 @@ venv/
 # Runtime state
 epigenome.json
 results.json
+
+# Internal review/audit artifacts (not for public release)
+docs/PEER_REVIEW_CLOSURE.md
+docs/RESEARCH_AUDIT_2026.md
